@@ -1,8 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
-
-from ysg_treelstm import Tree
+import Tree
 
 
 # module for childsumtreelstm
@@ -22,7 +21,7 @@ class ChildSumTreeLSTM(nn.Module):
     def node_forward(self, inputs, child_c, child_h):
         child_h_sum = torch.sum(child_h, dim=0, keepdim=True)
         # child_h_sum = child_h_sum.to(self.device)
-        iou = self.ioux(inputs) + self.iouh(child_h_sum)  #TODO 没有偏置 ？
+        iou = self.ioux(inputs) + self.iouh(child_h_sum)
         i, o, u = torch.split(iou, iou.size(1) // 3, dim=1)
         i, o, u = torch.sigmoid(i), torch.sigmoid(o), torch.tanh(u)
         f = torch.sigmoid(
@@ -36,27 +35,20 @@ class ChildSumTreeLSTM(nn.Module):
         return c, h
 
     def forward(self, tree):
-        for idx in range(tree.num_children):
-            self.forward(tree.children[idx])
+        def forward(self, tree, inputs):
+            for idx in range(tree.num_children):
+                self.forward(tree.children[idx], inputs)
+            # inputs = torch.LongTensor([tree.op]).to(self.device)
+            embedding = self.emb(inputs[tree.idx].detach())
+            if tree.num_children == 0:
+                child_c = embedding.detach().new(1, self.mem_dim).fill_(0.).requires_grad_()
+                child_h = embedding.detach().new(1, self.mem_dim).fill_(0.).requires_grad_()
+            else:
+                child_c, child_h = zip(*map(lambda x: x.state, tree.children))
+                child_c, child_h = torch.cat(child_c, dim=0), torch.cat(child_h, dim=0)
 
-        inputs = torch.LongTensor([tree.op]).to(self.device)
-        inputs = self.emb(inputs)
-        #TODO 加全连接层
-        if tree.num_children == 0:
-            # child_c = inputs[0].detach().new(1, self.mem_dim).fill_(0.).requires_grad_()
-            # child_h = inputs[0].detach().new(1, self.mem_dim).fill_(0.).requires_grad_()
-
-            #child_c = torch.Tensor(1, self.mem_dim).zero_().requires_grad_().to(self.device)
-            child_c = torch.Tensor(1, self.mem_dim).new_ones(1,self.mem_dim).requires_grad_().to(self.device)
-            #child_h = torch.Tensor(1, self.mem_dim).zero_().requires_grad_().to(self.device)
-            child_h = torch.Tensor(1, self.mem_dim).new_ones(1, self.mem_dim).requires_grad_().to(self.device)
-        else:
-            child_c, child_h = zip(* map(lambda x: x.state, tree.children))
-            child_c, child_h = torch.cat(child_c, dim=0), torch.cat(child_h, dim=0)
-
-        tree.state = self.node_forward(inputs, child_c, child_h)
-        del inputs, child_c, child_h
-        return tree.state
+            tree.state = self.node_forward(embedding, child_c, child_h)
+            return tree.state
 
 
 # module for distance-angle similarity

@@ -1,5 +1,4 @@
 from tqdm import tqdm
-from treelstm import utils
 import torch
 import math
 from torch.autograd import Variable
@@ -67,8 +66,6 @@ class Trainer(object):
     # helper function for testing
     def test(self, dataset, threshold=0.0):
         '''
-        :param dataset: 测试使用数据集
-        :param threshold: 判断输出是否是正例的阈值，大于该阈值表示为正例
         :return:
         '''
         self.model.eval()

@@ -4,13 +4,12 @@
 '''
 import os,sys
 
-sys.path.append("/root/treelstm.pytorch/ysg_treelstm")
 sys.path.append("/root/treelstm.pytorch")
 import logging
 import torch, numpy
 import gevent, datetime
 from config import parse_args
-from ysg_treelstm.Tree import Tree
+from Tree import Tree
 import time
 from ysg_treelstm.model_others import Sieamens
 from ysg_treelstm.model import SimilarityTreeLSTM

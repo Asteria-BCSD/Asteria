@@ -1,14 +1,11 @@
 #encoding=utf-8
 '''
-author: yangshouguo
-date: 2019年12月24日
-email: 891584158@qq.com
 '''
 
 # 应用训练好的模型，进行函数相似度计算
-from ysg_treelstm.datahelper import DataHelper
-from ysg_treelstm.application.application import Application
-from ysg_treelstm.Tree import Tree
+from datahelper import DataHelper
+from application.application import Application
+from Tree import Tree
 from tqdm import tqdm
 import datetime
 import json
@@ -16,10 +13,10 @@ from argparse import ArgumentParser
 from multiprocessing import Pool, cpu_count
 class ABSApp():
     '''
-    功能点：
-    1. 计算一个函数和多个函数之间的相似度
-    2. 计算多个函数和多个函数之间的相似度
-    3. 从数据库读取一个或者多个函数
+    Functions：
+    1. Similarity Calculation between a function and multiple functions
+    2. Similarity Calculation between functions and multiple functions
+    3. load ASTs from sqlite files
     '''
     def __init__(self, checkpoint_path):
         pass
@@ -28,9 +25,10 @@ class ABSApp():
 
     def ast_encode_similarity(self, sources = [], targets = []):
         '''
-        :param sources:源ast_encode列表
-        :param targets: 目标ast_encode列表
-        :return: dict: key是源函数名+elf路径名字， value是list 包含其他函数和相似度 [(similarity, function_name, elf_path)]
+        :param sources:list: ASTs
+        :param targets:list: ASTs
+        :return: dict: key is the functionname+elf path，
+        value is a list of tuples containing functions with corresponding similarity score: [(similarity, function_name, elf_path)]
         '''
         result = {}
         for function_name,elf_path,ast_encode in tqdm(sources):
@@ -47,16 +45,16 @@ class ABSApp():
             for r in res:
                 sim = r[0].get()
                 similarity_list.append((sim, r[1], r[2]))
-            similarity_list.sort(key=lambda x: x[0], reverse=True) # 排序
+            similarity_list.sort(key=lambda x: x[0], reverse=True) # sort in descending order by similarity
             result[function_name+"+"+elf_path] = similarity_list
         return result
 
     def ast_similarity(self, sources = [], targets = [], filter = None):
         '''
-        :param sources:源ast列表
-        :param targets: 目标ast列表
-        :param filter: 过滤函数， 应该接受两个参数，第一个为源ast， 第二个为目的ast，如果返回True，则相似度为0
-        :return: dict: key是源函数名，rank是一个列表，对应目标函数信息，和相似度; info 存储本函数信息
+        :param sources:list: ASTs
+        :param targets:list: ASTs
+        :return: dict: key is the functionname+elf path，
+        value is a list of tuples containing functions with corresponding similarity score: [(similarity, function_name, elf_path)]
         {'rank':[], 'info':(function_name, elf_file_name, elf_path, arch_name)}
         '''
         result = {}
@@ -67,16 +65,16 @@ class ABSApp():
                     res.append((func_info, 0))
                 else:
                     res.append((func_info, self.compute_app.similarity_tree(s_ast, t_ast)))
-            res.sort(key=lambda x: x[1], reverse=True) # 排序
+            res.sort(key=lambda x: x[1], reverse=True) #
             result[s_func_info[0]]['rank'] = res
             result[s_func_info[0]]['info'] = s_func_info
         return result
 
     def db_similarity(self, source_db, target_db, ast):
         '''
-        :param source_db:
-        :param target_db:
-        :param ast: True：直接使用ast进行计算相似度；False，使用ast的编码之后的向量进行相似度计算
+        :param source_db: str: path to a sqlite file containing ASTs of vulnerable functions
+        :param target_db: str: path to a sqlite file containing ASTs of firmware functions
+        :param ast: boolean: True：calculate similarity with AST；False: calculate similarity with AST encodings
         :return:
         '''
         source_asts = []
@@ -112,5 +110,5 @@ if __name__ == '__main__':
         for res in result:
             f.write(str(datetime.datetime.now())+"===="+res+"====\n")
             for sim, function_name, elf_path in result[res]:
-                if sim>0.9:
+                if sim>0.84:
                     f.write("%8.5f\t %20s %s\n" %(sim, function_name, elf_path))
