@@ -3,17 +3,18 @@
 
 '''
 import os,sys
-
-sys.path.append("/root/treelstm.pytorch")
+f = os.path.abspath(os.path.dirname(__file__))
+sys.path.append(os.path.join(f,"../"))
 import logging
 import torch, numpy
 import gevent, datetime
 from config import parse_args
+from model import get_tree_flat_nodes
 from Tree import Tree
 import time
-from ysg_treelstm.model_others import Sieamens
-from ysg_treelstm.model import SimilarityTreeLSTM
-from ysg_treelstm.datahelper import DataHelper
+from model_others import Sieamens
+from model import SimilarityTreeLSTM
+from datahelper import DataHelper
 from tqdm import tqdm
 logger = logging.getLogger("application.py")
 logger.addHandler(logging.StreamHandler())
@@ -27,21 +28,21 @@ datahelper = DataHelper()
 
 class Application():
     '''
-    这个类加载训练好的模型，对提供的ast进行计算相似度，提供以下功能：
-    1. 给定模型路径，加载模型
-    2. 给定ast，计算编码
-    3. 给定两个ast，计算相似度
+    This class loads the trained model, calculates the similarity of the provided ast, and provides the following functions:
+     1. Given the model path, loading the model
+     2. Given the ast, calculating the code  
+    3. Given two asts, calculating the similarity
     '''
-    def __init__(self, load_path, threshold = 0.5, cuda = False, model_name = "treelstm" ):
+    def __init__(self, load_path, threshold = 0.84, cuda = False, model_name = "treelstm" ):
         '''
-        :param load_path: 模型加载路径
-        :param cuda: bool : 是否使用GPU, 对数据库中ast进行多进程编码时必须为False
-        :param model_name: 使用的model类，例如 SplitedTreeLSTM
-        :param threshold: 阈值,取值范围 (0~1)，建议在0.5左右
+        :param load_path: path to saved model
+        :param cuda: bool : with or witout GPU when computing
+        :param model_name: model selector
+        :param threshold:
         '''
-        self.args = parse_args(["--cuda"]) #TODO argparse
+        self.args = parse_args(["--cuda"]) #
         self.model =None
-        self.embmodel = None #真正用于计算编码的模型
+        self.embmodel = None #the model to encode ast
         self.model_name = model_name
         self.db = None
         if cuda and torch.cuda.is_available():
@@ -71,12 +72,12 @@ class Application():
 
     def load_model(self, path, model):
         '''
-        :param path: 模型路径
-        :param model: 使用的model类，例如 SplitedTreeLSTM
+        :param path: path to saved model
+        :param model: model selector
         :return:
         '''
         if not os.path.isfile(path):
-            print("model path %s non-exists")
+            print("model path %s non-exists" % path)
             raise Exception
         checkpoint = torch.load(path, map_location=self.device)
         if "auc" in checkpoint:
@@ -90,11 +91,12 @@ class Application():
 
     def encode_ast(self, tree):
         '''
-        :param tree: root节点， Tree 对象
-        :return: 一个numpy向量 （64 or 150维）
+        :param tree: Tree class instance
+        :return: numpy vector
         '''
+
         with torch.no_grad():
-            state, hidden = self.embmodel(tree)
+            state, hidden = self.embmodel(tree, get_tree_flat_nodes(tree).to(self.device))
             return state.squeeze(0).cpu().numpy()
 
     def similarity_tree_hash_sim(self, ltree, rtree):
@@ -103,9 +105,9 @@ class Application():
 
     def similarity_tree(self, ltree, rtree):
         '''
-        利用神经网络treelstm 计算两个 抽象语法树 之间的相似度，树之间没有先后关系
-        :param ltree:  第一个树
-        :param rtree:  第二个树
+        calculate the similarity between two trees
+        :param ltree:
+        :param rtree:
         :return:
         '''
         with torch.no_grad():
@@ -119,10 +121,10 @@ class Application():
 
     def similarity_vec(self, lvec, rvec):
         '''
-        传入树已经编码好的向量，计算相似度
+        calculate the similarity between two tree encodings
         :param lvec: numpy.ndarray or torch.tensor
         :param rvec:
-        :return: 一个实数 0~1 之间，
+        :return: float: similarity
         '''
         if type(lvec) is list:
             lvec = numpy.array(lvec)
@@ -150,13 +152,13 @@ class Application():
 
     def encode_ast_in_db(self, db_path):
         '''
-        对数据库中的树利用训练好的模型进行编码，得到向量，保存到新的列 ast_encode
-        :param db_path: 数据库路径
+        Encode ASTs into vectors in database file
+        :param db_path: path to sqlite db file
         :return:
         '''
         db_conn = self.get_conn(db_path)
         cur = db_conn.cursor()
-        #修改表结构，添加一列
+        #alter table
         sql_add_column = """alter table function add column ast_encode TEXT"""
         try:
             cur.execute(sql_add_column)
@@ -166,11 +168,8 @@ class Application():
         finally:
             cur.close()
         to_encode_list = []
-        start = 650000
-        end = start+40000
-        #end = 1868280
         global datahelper
-        for func_info, func_ast in tqdm(datahelper.get_functions(db_path, start=start, end=end), desc="Load Database: "):
+        for func_info, func_ast in tqdm(datahelper.get_functions(db_path), desc="Load Database: "):
             to_encode_list.append((func_info, func_ast))
         encode_group = []
         count = 0
@@ -201,7 +200,7 @@ class Application():
             return r
     def encode_and_update(self, functions):
         '''
-        对functions中的 func_ast 利用神经网络进行编码
+        encode functions
         :param functions:
         :return:
         '''
@@ -211,7 +210,7 @@ class Application():
         count = 1
         for func_info, func_ast in tqdm(functions, desc="Adding to pool : "):
             res.append((p.apply_async(self.func_wrapper, (self.encode_ast, func_ast)), func_info[0], func_info[1])) # func_info[0] is function name; 1 is elf_path
-            count+=1
+            count += 1
         #try:
         p.close()
         p.join()
@@ -242,7 +241,7 @@ class Application():
 def time_consumption_statistics():
     app = Application(load_path="/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/crossarch.pt")
     dataset = torch.load("/root/treelstm.pytorch/data/cross_arch.pth")
-    AST_SIZE_GROUP = [[] for i in range(5)] # 按照不同大小对AST进行分组存储，分别对应 0~20, 20~40 ... , 80~100. 每个分组存储100个
+    AST_SIZE_GROUP = [[] for i in range(5)] # Group and store AST according to different sizes, corresponding to 0~20, 20~40 ..., 80~100. Each group stores 100
     ast_size = 0
     interval = 50
     GROUP_SIZE = 100
@@ -259,7 +258,7 @@ def time_consumption_statistics():
                 if len(AST_SIZE_GROUP[i]) >= GROUP_SIZE:
                     break
 
-    #===统计编码时间===
+    #==times for encoding===
     import datetime
     TIME_encode = [0 for i in range(5)]
     TIME_encode_distribution = []
@@ -274,7 +273,7 @@ def time_consumption_statistics():
         end_time = datetime.datetime.now()
         TIME_encode[i] = (end_time-start_time).total_seconds()
 
-    # === 统计不同量级相似度计算时间 量级 1v1, 1v50, 1v100, 1v150, 1v200, 1v250, 1v300
+    # ===
     TIME_SIMILARITY = [0 for i in range(5)]
     source = ENCODE_SIZE_GROUP[0]
     Sim_Time_Statistic = []
@@ -297,26 +296,9 @@ def time_consumption_statistics():
         f.write("%d calculation cost %f seconds\n" %(len(ENCODE_SIZE_GROUP), time_sim))
         f.write("Time details : %s \n" % str(Sim_Time_Statistic))
 
-
-def test():
-    app = Application(load_path="./data/crossarch.pt")
-    dataset = torch.load("./data/cross_arch.pth") #
-    for idx in range(len(dataset)):
-        source, target, label = dataset[idx]
-        source_tree = source[-1]
-        target_tree = target[-1]
-        source_encode = app.encode_ast(source_tree)
-        target_encode = app.encode_ast(target_tree)
-        print(str(source_encode))
-        # print("source encode:%s \n source_encode %s" %(source_encode, target_encode))
-        print("label %s,\t similarity: %f" % (label, app.similarity_vec(source_encode, target_encode)))
-
-        app.encode_ast_in_db(p)
-
 if __name__ == '__main__':
 
-    db_path = "/root/data/firmwares/Netgearfirmwares.sqlite"
-    app = Application(load_path="/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/train_after_hash_calculated.pt", )
+    db_path = "../data/vul.sqlite"
+    app = Application(load_path="../data/saved_model.pt", )
     app.encode_ast_in_db(db_path)
-    # app.encode_ast_in_db("/root/data/firmwares/vul.sqlite")
-    # app.encode_ast_in_db("/root/data/firmwares/Dlinkfirmwares.sqlite")
+

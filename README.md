@@ -20,4 +20,22 @@ This is the official repository for Asteria.
 3. vulnerability search
 
 # Usage
-To Add
+
+## Vulnerability Search
+`python application/main_app.py "database of vulnerable functions" "database of firmware functions"
+For example:
+ `python application/main_app.py data/vul.sqlite data/NetGear_Small.sqlite`
+ 
+ Then the search results are saved into "VulSearch.result".
+ 
+ The format of results is as follows:
+ ```
+[VULFUNC]:   ftp_retrieve_glob  VULELF:/home/ubuntu/disk/hdd_1/ysg/binary_pool/vulnerable_set/CVE-2014-4877/wget
+        |Sim:1.000      |Func:   ftp_retrieve_glob      |ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.3.32_1.1.21.zip.extracted/_R8000-V1.0.3.32_1.1.21.chk.extracted/squashfs-root/bin/wget
+
+        |Sim:1.000      |Func:   ftp_retrieve_glob      |ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.2.44_1.0.96.chk.extracted/squashfs-root/bin/wget
+
+```
+
+The VULFUNC denotes the name of vulnerable function. The Sim denotes the similarity score. The Func denotes the candidate function name.
+The ELFPath denotes the path of binary where candidate function come from.

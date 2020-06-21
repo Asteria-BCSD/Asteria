@@ -1,0 +1,4 @@
+[Query]select function_name, elf_path, elf_file_name, caller, callee, ast_encode, ast_pick_dump
+                        from function 
+[Query]select function_name, elf_path, elf_file_name, caller, callee, ast_encode, ast_pick_dump
+                        from function 

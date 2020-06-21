@@ -4,15 +4,25 @@
 :user:yangshouguo
 '''
 import sqlite3
-import pickle
+import pickle,os,sys
 from collections import defaultdict
 from random import randint
-from ysg_treelstm import Tree
+import Tree
 from numpy import random
+from copy import deepcopy
+import random as rd
 from tqdm import tqdm
 import numpy as np
 import hashlib
 from multiprocessing import Pool
+import logging
+l = logging.getLogger("datahelper.log")
+logpath = os.path.join(os.path.dirname(__file__),"log")
+if not os.path.exists(logpath):
+    os.mkdir(logpath)
+l.addHandler(logging.FileHandler(os.path.join(logpath,"datahelper.log")))
+l.addHandler(logging.StreamHandler())
+l.setLevel(logging.INFO)
 '''
 功能：
 1. 加载多个数据库，进行数据查询
@@ -48,15 +58,16 @@ class DataHelper:
 
         return sqlite3.connect(filename)
 
-    def do_query(self, db_path, optimization="O2"):
+    def do_query(self, db_path, optimization="O2", where="", limit=""):
         '''
         :param db_path:
         :param optimization:
         :return: A generator
         '''
         db = self.load_database(db_path)
-        sql = """select function_name, elf_file_name, elf_path, arch_name, ast_pick_dump
-         from function """
+        sql = """select function_name, elf_file_name, elf_path, arch_name, caller, callee, ast_pick_dump
+         from function """ + where + " " +limit
+        l.info(sql)
 
         cur = db.cursor()
         lines = cur.execute(sql)
@@ -65,21 +76,27 @@ class DataHelper:
         cur.close()
         db.close()
 
-    def get_functions(self, db_path, start=-1, end=-1):
+    def get_functions(self, db_path, start=-1, end=-1, where_suffix=None):
         '''
         :param db_path:
         :param start: 开始查询的偏移量
         :param end: 结束查询的偏移量
-        :return: A generator : 第一个元素是 函数的一些信息， 第二个是函数的ast
+        :param where_suffix: 限制查询的where子句
+        :return: A generator : 第一个元素是 函数的一些信息，
+        (函数名，elf路径名，elf文件名，调用函数数量，被调用函数数量，ast编码向量
+        ) 第二个是函数的ast
         '''
         db = self.load_database(db_path)
+        suffix = ""
+        sql = """select function_name, elf_path, elf_file_name, caller, callee, ast_encode, ast_pick_dump
+                        from function """
         if start < 0 :
-            sql = """select function_name, elf_path, ast_encode, ast_pick_dump
-                from function """
+            if where_suffix:
+                suffix = where_suffix
         else:
-            sql = "select function_name, elf_path, ast_encode, ast_pick_dump\
-                            from function limit %d,%d" % (start, end-start)
-
+            suffix = " limit %d,%d" % (start, end-start)
+        sql += suffix
+        l.info("[Query]"+sql)
         cur = db.cursor()
         lines = cur.execute(sql)
         for line in lines:
@@ -135,9 +152,9 @@ class DataHelper:
         '''
         for d in data:
             d[idx] = self.loads_ast_tree(d[idx])
-        return data
+        return list(filter(lambda d:d[idx].size()>3, data))# 过滤AST大小小于3的AST
 
-    def _make_cross_architecture_paires(self, arch1_db, arch2_db, non_homologous_pair_rate = 2):
+    def _make_cross_architecture_paires(self, arch1_db, arch2_db, non_homologous_pair_rate = 2, limit=""):
         '''
         给定两个数据库文件，读取其中函数，提取共同函数，根据共同函数构建同源函数对和非同源函数对.
         :param arch1_db: 架构1 数据库文件路径
@@ -145,6 +162,12 @@ class DataHelper:
         :param non_homologous_pair_rate: int; 非同源函数对数与同源函数对的比例
         :return:同源函数对数组 和 非同源函数对数组
         '''
+        def random_choose_N(list, N):
+            ln = len(list)
+            if N > ln:
+                return list
+            return rd.sample(list, N)
+
 
         def get_componet_and_binary_name(path):
             # 返回组件名和二进制文件名
@@ -154,24 +177,25 @@ class DataHelper:
 
         homologous_pair = []
         nonhomologous_pair = []
-        arch1_data = list(self.do_query(arch1_db))
-        arch2_data = list(self.do_query(arch2_db))
-        arch1_data = self.recvore_ast_tree(arch1_data, idx=4)
-        arch2_data = self.recvore_ast_tree(arch2_data, idx=4)
-        arch2_len = len(arch2_data)
+        arch1_data = list(self.do_query(arch1_db, limit=limit)) #, where="where elf_file_name not like 'libcrypto%' or 'libssl%' ", limit=limit))
+        arch2_data = list(self.do_query(arch2_db, limit=limit)) #, where="where elf_file_name not like 'libcrypto%' or 'libssl%' ", limit=limit))
+
+        arch1_data = self.recvore_ast_tree(arch1_data, idx=-1)
+        arch2_data = self.recvore_ast_tree(arch2_data, idx=-1)
+        arch2_len = len(list(arch2_data))
         same_source_function = defaultdict(list) #第一个值表示该函数在arch1_data中的下标，第二个值表示该函数在arch2_data中下标;长度小于2，表示该函数不存在同源函数对 key:function_name+elf_file_name
         for idx, line in enumerate(arch1_data):
-            key = "+".join([line[0], get_componet_and_binary_name(line[2])])
+            key = "+".join([line[0], get_componet_and_binary_name(line[2])]) # function_name + binary_name
             same_source_function[key].append(idx)
 
         for idx, line in enumerate(arch2_data):
             key = "+".join([line[0], get_componet_and_binary_name(line[2])])
-            if key == "toggle_switches+alsa-utils-1.1.7/alsamixer":
-                print(idx)
             same_source_function[key].append(idx)
         names = list(map(lambda x:x if len(same_source_function[x])>1 else None, same_source_function))
         names = list(filter(lambda x:x is not None, names))
-        for name in tqdm(names ,desc="dataset"):
+        # names = random_choose_N(names, N=1000) #for buildroot train
+        l.info("From Two database selected {} homologous functions".format(len(names)))
+        for name in tqdm(names, desc="cross arch dataset producing......"):
             try:
                 homologous_pair.append((arch1_data[same_source_function[name][0]], arch2_data[same_source_function[name][1]], 1)) #with label
             except IndexError as err:
@@ -190,8 +214,10 @@ class DataHelper:
                     if non_homologous_pair_rate <= 0:
                         break
                     non_homologous_pair_rate -= 1
-
-        return homologous_pair, nonhomologous_pair
+        hp = deepcopy(homologous_pair)
+        np = deepcopy(nonhomologous_pair)
+        del  homologous_pair, nonhomologous_pair
+        return hp, np
 # ============== ast 哈希 encode ======================
     def hashencode_ast(self, ast):
         mu = hashlib.md5()
@@ -269,16 +295,21 @@ class DataHelper:
         cur.close()
         db_conn.close()
 # ============== ast 哈希 encode ====================== end
-    def get_cross_archtecture_pair(self, *archs): #生成跨架构数据集
+    def get_cross_archtecture_pair(self, *archs, limit=""): #生成跨架构数据集
         pairs = []
+        arch_record = set()
         for arch1 in archs:
             for arch2 in archs:
-                if arch1 == arch2:
+                if arch1 == arch2 or (arch1, arch2) in arch_record:
                     continue
-                homologous_pair, non_homologous_pair = self._make_cross_architecture_paires(arch1, arch2)
+                arch_record.add((arch1,arch2))
+                arch_record.add((arch2,arch1))
+                l.info("[I] Combining %s and %s" %(arch1, arch2))
+                homologous_pair, non_homologous_pair = self._make_cross_architecture_paires(arch1, arch2, limit=limit)
                 pairs += (homologous_pair+non_homologous_pair)
         sp = random.permutation(len(pairs))
         pairs = np.array(pairs)
+        l.info("[I] Dataset preparation finshed")
         return pairs[sp]
 
 
@@ -332,13 +363,6 @@ def mk_ast_hash_encode_dataset():
     torch.save(all_function_pairs, "/root/data/cross_arch_dataset_with_ast_hash_encode.pth")
 
 
-
-
-def test_load(): #OK
-    import json
-    dh = DataHelper()
-    for func_name, elf_path, ast_encode in  dh.get_function_ast_encode("/root/data/firmwares/vul.sqlite"):
-        print(func_name, elf_path, json.loads(ast_encode))
 
 def make_target_set():
     dh = DataHelper()

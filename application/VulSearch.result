@@ -1,0 +1,2 @@
+******Time: 2020-06-21 06:27:05.833276 ******
+******Args: Namespace(checkpoint='/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/crossarch_buildroot.pt', model_selector='treelstm', output='VulSearch.result', source_db='../data/vul.sqlite', target_db='../data/NetGear_Small.sqlite', threshold='0.9', use_ast=False) ******
