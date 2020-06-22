@@ -1,6 +1,7 @@
-import sys,os
-sys.path.append("/root/treelstm.pytorch")
-from Tree import Tree
+import os,sys
+f = os.path.abspath(os.path.dirname(__file__))
+sys.path.append(os.path.join(f,"../"))
+import Tree
 import torch
 import datetime,tqdm
 from sklearn.metrics import roc_curve, auc

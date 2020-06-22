@@ -22,9 +22,12 @@ This is the official repository for Asteria.
 # Usage
 
 ## Vulnerability Search
-`python application/main_app.py "database of vulnerable functions" "database of firmware functions"
-For example:
+`python application/main_app.py "database of vulnerable functions" "database of firmware functions`
+### For example:
  `python application/main_app.py data/vul.sqlite data/NetGear_Small.sqlite`
+ 
+ vul.sqlite saves the ASTs of vulnerable functions.
+ NetGear_Small.sqlite saves the ASTs of part of firmware functions from NetGear manufacture.
  
  Then the search results are saved into "VulSearch.result".
  
@@ -39,3 +42,12 @@ For example:
 
 The VULFUNC denotes the name of vulnerable function. The Sim denotes the similarity score. The Func denotes the candidate function name.
 The ELFPath denotes the path of binary where candidate function come from.
+
+
+## Model Training
+Since the buildroot dataset we used is too large(28G), we construct a demo training dataset for demonstrating.
+
+`python train.py`
+After 60 epochs training, the model with best performance is saved in "checkpoints/crossarch.pt".
+
+The trained model parameters and settings in our work are placed in "data/saved_model.pt"

@@ -24,12 +24,7 @@ def parse_arg():
 
 class Model_Performance():
     '''
-    该类主要包含功能：
-    1. 测试两个不同架构之间的ROC曲线，Top1，Top10，Top50
-    2. 测试不同架构，不同编译优化之间的ROC曲线 Top1，Top10，Top50
-    3. 测试不同编译优化之间的ROC Top1，Top10，Top50
-    4. 加载数据集
-    5. 测试在所有架构上的ROC曲线 Top1，Top10，Top50
+
     '''
     def __init__(self, checkpoint_path, model_name):
         self.chkpoint = checkpoint_path

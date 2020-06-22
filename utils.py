@@ -39,15 +39,15 @@ class Trainer(object):
         indices = torch.randperm(len(dataset), dtype=torch.long, device='cpu')
         for idx in tqdm(range(len(dataset)), desc='Training epoch ' + str(self.epoch + 1) + ''):
             source_function,  target_function,  label = dataset[indices[idx]]
-            #ltree = source_function[-1]
-            #rtree = target_function[-1]
-            ltree = source_function
-            rtree = target_function
+            ltree = source_function[-1]
+            rtree = target_function[-1]
+            # ltree = source_function
+            # rtree = target_function
             target = map_label_to_target(label, self.args.num_classes)
             target = target.to(self.device)
             output = self.model(ltree, rtree)
             output = output.view(1,-1)
-            #保证计算loss的维度必须一致
+            #To
             assert output.size() == target.size()
             loss = self.criterion(output, target)
             #print(output)
@@ -88,7 +88,7 @@ class Trainer(object):
                 assert output.size() == target.size()
                 loss = self.criterion(output, target)
                 total_loss += loss.item()
-                output = output.squeeze().to('cpu') #数据维度压缩，去掉维数为1的维度
+                output = output.squeeze().to('cpu') #
                 predictions[idx] = output
             # predictions = torch.Tensor(list(map(lambda x: 1 if x > threshold else 0, predictions)))
         return total_loss / len(dataset), predictions

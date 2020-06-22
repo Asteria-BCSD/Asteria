@@ -7,8 +7,6 @@ def parse_args(iargs = []):
     # data arguments
     parser.add_argument('--data', default='data/sick/',
                         help='path to dataset')
-    parser.add_argument('--glove', default='data/glove/',
-                        help='directory with GLOVE embeddings')
     parser.add_argument('--save', default='checkpoints/',
                         help='directory to save checkpoints in')
     parser.add_argument('--model_selector', default='flatlstm', choices=["flatlstm", "splitedtracelstm", "treelstm"],
