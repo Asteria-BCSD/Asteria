@@ -8,7 +8,8 @@ DBNAME = ""
 l = logging.getLogger("DbOp.py")
 l.setLevel(logging.WARNING)
 l.addHandler(logging.StreamHandler())
-l.addHandler(logging.FileHandler("/tmp/DbOp.log"))
+l.addHandler(logging.FileHandler("DbOp.log"))
+l.handlers[0].setFormatter(logging.Formatter("%(filename)s : %(message)s"))
 root = os.path.dirname(os.path.abspath(__file__))
 class DBOP():
     def __init__(self, db_path=None):
@@ -90,11 +91,7 @@ class DBOP():
             cur.execute(sql, values)
             cur.close()
             l.info("elfpath:functionname %s:%s" % (elf_path, func_name))
-        except Exception:
-            l.error("[E]insert error. args : %s\n %s" % (str(values), Exception.message))
-            raise
-
-    def query_function(self):
-        #TODO
-        pass
+        except :
+            # l.error("[E]insert error. args : %s\n %s" % (str(values), Exception.message))
+            l.error("Function %s's AST insertion to database fails" % (func_name))
 

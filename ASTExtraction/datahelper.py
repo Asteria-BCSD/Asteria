@@ -7,7 +7,7 @@ import sqlite3
 import pickle,os,sys
 from collections import defaultdict
 from random import randint
-from Tree import Tree
+import Tree
 from numpy import random
 from copy import deepcopy
 import random as rd
@@ -16,13 +16,15 @@ import numpy as np
 import hashlib
 from multiprocessing import Pool
 import logging
+root_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../")
+sys.path.append(root_dir)
 l = logging.getLogger("datahelper.log")
-logpath = os.path.join(os.path.dirname(__file__), "log")
+logpath = os.path.join(os.path.dirname(__file__),"log")
 if not os.path.exists(logpath):
     os.mkdir(logpath)
-l.addHandler(logging.FileHandler(os.path.join(logpath, "datahelper.log")))
+l.addHandler(logging.FileHandler(os.path.join(logpath,"datahelper.log")))
 l.addHandler(logging.StreamHandler())
-l.setLevel(logging.INFO)
+l.setLevel(logging.ERROR)
 '''
 功能：
 1. 加载多个数据库，进行数据查询

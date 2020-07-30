@@ -11,6 +11,7 @@ import idaapi
 from idc import *
 from idaapi import *
 from idautils import *
+from Tree import Tree
 import logging,os,sys
 root = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(root)
@@ -18,8 +19,10 @@ import pickle
 from DbOp import DBOP
 l = logging.getLogger("ast_generator.py")
 l.addHandler(logging.StreamHandler())
-l.addHandler(logging.FileHandler("/tmp/ast_generator.log"))
-l.setLevel(logging.WARNING)
+l.addHandler(logging.FileHandler("ast_generator.log"))
+l.handlers[0].setFormatter(logging.Formatter("%(filename)s : %(message)s"))
+l.handlers[0].setLevel(logging.ERROR)
+l.handlers[1].setLevel(logging.INFO)
 #---- prepare environment
 def wait_for_analysis_to_finish():
     '''
@@ -50,42 +53,7 @@ load_plugin_decompiler()
 
 #-----------------------------------
 
-class Tree(object):
-    def __init__(self):
-        self.parent = None
-        self.num_children = 0
-        self.children = list()
-        self.op = None # value of node
-        self.value = None # the value of constant or string if the parent node is a constant or string node.
-        self.opname = "" # name of node, e.g. 'asg' (assignment)
-    def add_child(self, child):
-        child.parent = self
-        self.num_children += 1
-        self.children.append(child)
 
-    def size(self):
-        if getattr(self, '_size'):
-            return self._size
-        count = 1
-        for i in range(self.num_children):
-            count += self.children[i].size()
-        self._size = count
-        return self._size
-
-    def depth(self):
-        if getattr(self, '_depth'):
-            return self._depth
-        count = 0
-        if self.num_children > 0:
-            for i in range(self.num_children):
-                child_depth = self.children[i].depth()
-                if child_depth > count:
-                    count = child_depth
-            count += 1
-        self._depth = count
-        return self._depth
-    def __str__(self):
-        return self.opname
 #--------------------------
 spliter = "************"
 class Visitor(idaapi.ctree_visitor_t):
@@ -107,7 +75,6 @@ class Visitor(idaapi.ctree_visitor_t):
         AST = Tree()
         try:
             l.info("[insn] op  %s" % (ins.opname))
-
             AST.op=ins.op
             AST.opname = ins.opname
 
@@ -166,8 +133,8 @@ class Visitor(idaapi.ctree_visitor_t):
             else:
                 l.warning('[error] not handled op type %s' % ins.opname)
 
-        except Exception, e:
-            l.warning("[E] exception here ! " + e.message)
+        except:
+            l.warning("[E] exception here ! ")
 
         return AST
 
@@ -354,7 +321,7 @@ class Visitor(idaapi.ctree_visitor_t):
 
 class AstGenerator():
 
-    def __init__(self, optimization_level, compiler = 'gcc'):
+    def __init__(self, optimization_level = "default", compiler = 'gcc'):
         '''
         :param optimization_level: the level of optimization when compile
         :param compiler: the compiler name like gcc
@@ -385,6 +352,10 @@ class AstGenerator():
         endian = "big" if is_be else "little"
         return bits, info.procName, endian
 
+    def progreeBar(self, i):
+        sys.stdout.write('\r%d%% [%s]' %(int(i), "#"*i))
+        sys.stdout.flush()
+
     def run(self, fn, specical_name = ""):
         '''
         :param fn: a function to handle the functions in binary
@@ -395,6 +366,7 @@ class AstGenerator():
             l.info("specific functino name %s" % specical_name)
         for i in range(0, get_func_qty()):
             func = getn_func(i)
+            self.progreeBar(int((i*1.0)/get_func_qty()*100))
             segname = get_segm_name(getseg(func.startEA))
             if segname[1:3] not in ["OA", "OM", "te", "_t"]:
                 continue
@@ -403,23 +375,28 @@ class AstGenerator():
                 continue
             try:
                 ast_tree, pseudocode, callee_num, caller_num = fn(func)
-                self.function_info_list.append((func_name, hex(func.startEA) ,pickle.dumps(ast_tree), pseudocode, callee_num, caller_num))
-            except Exception, e:
-                l.warning(e.message)
+                # l.error("AST_TREE:"+type(ast_tree))
+                self.function_info_list.append((func_name, hex(func.startEA), pickle.dumps(ast_tree), pseudocode, callee_num, caller_num))
+            except Exception,e:
+                l.warning("%s error" % fn)
+                l.warning(str(e))
 
     def save_to(self, db):
         '''
         :param db: DBOP instance
         :return:
         '''
+        N = 0
+        l.debug("%s records to be inserted" % len(self.function_info_list))
         for info in self.function_info_list:
             try:
                 db.insert_function(info[0], info[1], self.file_name, self.bin_file_path,
                                    self.arch+str(self.bits), self.endian, self.optimization_level, info[2], info[3], info[4],info[5])
-            except Exception,e:
+                N+=1
+            except:
                 l.error("insert operation exception when insert %s" % self.bin_file_path+" "+info[0])
-                l.error(e.message)
-
+                # l.error(e.message)
+        return N
     @staticmethod
     def get_info_of_func(func):
         '''
@@ -432,7 +409,7 @@ class AstGenerator():
             vis.apply_to(cfunc.body, None)
             return vis.root, vis.get_pseudocode(), vis.get_callee(), vis.get_caller()
         except:
-            l.warning("function %s decompile failed" % (GetFunctionName(func.startEA)))
+            l.warning("Function %s decompilation failed" % (GetFunctionName(func.startEA)))
             raise
 
 

@@ -29,3 +29,19 @@ optional arguments:
                         specify the compilation level of binary
   --timeout TIMEOUT     max seconds a binary cost
 ```
+
+
+# Use as IDA Plugin
+
+## install
+1. copy `Asteria_ida_plugin.py` to `/path/to/ida/plugin`. `/path/to/ida/plugin` means the plugin directory in your ida installation directory.
+2. copy the directory `ASTExtraction` to `/path/to/ida/python/`
+3. make sure the python library "numpy, torch, gevent, sklearn" have installed in local python environment
+
+## usage
+
+1. 
+To dump all/one AST feature(s) of function(s) to a database file.
+
+2. 
+To Calculate Similarity between all functions and functions in another database file.

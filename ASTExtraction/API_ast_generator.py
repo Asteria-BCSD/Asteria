@@ -6,7 +6,7 @@ A script for facilitating the usage of ast_generator.py
 import sys, os, logging, argparse
 root = os.path.dirname(os.path.abspath(__file__))
 import subprocess
-from tqdm import tqdm
+
 from datetime import datetime
 def parse_arg():
     argparser = argparse.ArgumentParser(description="AST generator script based on IDA and \033[1;31m Python3 \033[0m!")
@@ -81,6 +81,7 @@ class AstGenerator():
         return False
 
     def extract_ast_from_dir(self, dir):# the described function 3
+        from tqdm import tqdm
         for root, dirs, files in os.walk(dir):
             for f in tqdm(files, desc=os.path.basename(root)):
                 binary_path = os.path.join(root, f)

@@ -8,10 +8,11 @@ email: 891584158@qq.com
 # 应用训练好的模型，进行函数相似度计算
 import os, sys
 from math import exp
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),"../../"))
-from ysg_treelstm.datahelper import DataHelper
-from ysg_treelstm.application.application import Application
-from ysg_treelstm.Tree import Tree # needed!
+root_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(root_dir)
+from datahelper import DataHelper
+from application import Application
+from Tree import Tree # needed!
 from tqdm import tqdm
 import datetime
 from sklearn.metrics.pairwise import cosine_similarity
@@ -19,12 +20,13 @@ import json
 from argparse import ArgumentParser
 from multiprocessing import Pool, cpu_count
 import logging
+from collections import defaultdict
 l = logging.getLogger("main_app")
 log_dir = "./log"
 if not os.path.exists(log_dir):
     os.mkdir(log_dir)
 l.addHandler(logging.FileHandler("./log/main_app.log"))
-l.addHandler(logging.StreamHandler())
+# l.addHandler(logging.StreamHandler())
 l.setLevel(logging.INFO)
 class Asteria():
     '''
@@ -49,24 +51,42 @@ class Asteria():
         :param targets: 目标ast_encode列表
         :return: dict: key是源函数名+elf路径名字， value是list 包含其他函数和相似度 [(similarity, function_name, elf_path)]
         '''
-        result = {}
-        for function_name,elf_path,ast_encode in tqdm(sources):
+        result = defaultdict(dict)
+        for (function_name,elf_path,elf_name,scaller, scallee, ast_encode),_ in tqdm(sources):
             res = []
             pool = Pool(processes=cpu_count()-2)
-            for tfunction_name,telf_path,tast_encode in tqdm(targets, desc="func %s" % function_name):
+            for (tfunction_name, telf_path,telf_name,tcaller, tcallee, tast_encode),_ in targets:
                 if tast_encode is None:
                     print("%s encode not exits" % tfunction_name)
-                res.append((pool.apply_async(self.compute_app.similarity_vec, (json.loads(ast_encode), json.loads(tast_encode))),
-                            tfunction_name, telf_path))
+                res.append((pool.apply_async(self.compute_app.similarity_treeencoding_with_correction, (json.loads(ast_encode), json.loads(tast_encode),
+                                                                                                        (scaller,scallee),(tcaller, tcallee))),
+                            tfunction_name, telf_path,telf_name))
             pool.close()
             pool.join()
             similarity_list = []
             for r in res:
                 sim = r[0].get()
-                similarity_list.append((sim, r[1], r[2]))
-            similarity_list.sort(key=lambda x: x[0], reverse=True) # 排序
-            result[function_name+"+"+elf_path] = similarity_list
+                if sim >= threshold:
+                    similarity_list.append(((r[1],r[2]), sim))
+            similarity_list.sort(key=lambda x: x[1], reverse=True) # 排序
+            result[function_name]['rank'] = similarity_list
+            result[function_name]['info'] = (function_name, elf_path, telf_name)
         return result
+
+    def prefilter(self, ast1, ast2):
+        '''
+        :param ast1:
+        :param ast2:
+        :return: 根据ast1 和 ast2 的大小进行预过滤。如果ast1 和 ast2 大小相差过大，返回1，跳过ast的编码计算。否则返回0
+        '''
+        c1 = ast1.num_children
+        c2 = ast2.num_children
+        if abs(c1-c2) > 30:
+            return 1
+
+        if c1/c2 > 3 or c2/c1 > 3:
+            return 1
+        return 0
 
     def ast_similarity(self, sources = [], targets = [], astfilter = None, threshold = 0):
         '''
@@ -80,16 +100,22 @@ class Asteria():
         result = {}
         N = len(sources)
         i = 0
+        TN = len(targets)
+        astfilter = self.prefilter
+
+        if astfilter:
+            l.error("Filter Function is applied.")
         for s_func_info, s_ast in sources:
             i+=1
             result[s_func_info[0]] = {'rank':'','info':''}
             res = []
-            for func_info, t_ast in tqdm(targets, desc="%dth for total %d." % (i,N)):
-                if astfilter and astfilter(s_ast, t_ast):
-                    res.append([func_info, 0])
-                else:
-                    res.append([func_info, self.compute_app.similarity_tree_with_correction(
-                        s_ast, t_ast,[s_func_info[-3],s_func_info[-2]],[func_info[-3], func_info[-2]])])
+            with tqdm(targets, desc="[%d] of %d" % (i,N), dynamic_ncols=True) as t:
+                for func_info, t_ast in t:
+                    if astfilter and astfilter(s_ast, t_ast):
+                        res.append([func_info, 0])
+                    else:
+                        res.append([func_info, self.compute_app.similarity_tree_with_correction(
+                            s_ast, t_ast,[s_func_info[-3],s_func_info[-2]],[func_info[-3], func_info[-2]])])
 
             res = list(filter(lambda x:x[1]>threshold, res))
             res.sort(key=lambda x: x[1], reverse=True) # 排序
@@ -110,8 +136,7 @@ class Asteria():
         source_asts = []
         target_asts = []
         elf_names = set()
-        where_suffix = ""
-        #where_suffix = " where function_name like 'EVP_EncodeUpdate' " # TODO delete this line;
+        where_suffix = " limit 0,20" # the number of vulnerability functions does not exceeds 100
         for func in list(self.dh.get_functions(source_db, where_suffix=where_suffix)):
             # limit vul function number
             source_asts.append(func)
@@ -119,6 +144,7 @@ class Asteria():
         elf_files = " or ".join(elf_names)
         # where_suffix = " where elf_file_name like %s" % elf_files
         #l.info("[DB] the firmware select filter is %s" % where_suffix)
+        where_suffix = ""
         for func in self.dh.get_functions(target_db, start=start, end=end, where_suffix=where_suffix):
             target_asts.append(func)
 
@@ -134,18 +160,28 @@ def parse_args():
                     help="source sqlite db file path, usually vulnerability function database")
     ap.add_argument("target_db", type=str,
                     help="target sqlite db file path, usually firmware function database")
-    ap.add_argument("--use_ast", type=bool, default=True,
+    ap.add_argument("--use_ast", dest='use_ast', action="store_true",
                     help="use ast not ast_encode to compute similarity(default True)")
+    ap.add_argument("--no_ast", dest="use_ast", action="store_false")
     ap.add_argument("--threshold", type=str, default="0.9",
                     help="The similarity threshold to filter candidate functions(default 0.9)")
     ap.add_argument("--checkpoint", type=str,
-                    default="/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/crossarch_buildroot.pt",
+                    default=os.path.join(root_dir, "saved_model.pt"),
                     help="pytorch model checkpoint path")
     ap.add_argument("--model_selector", type=str, default="treelstm", choices=['treelstm','binarytreelstm','lstm'])
     ap.add_argument("--result", type=str, default="", help="file path to save search results")
     return ap.parse_args()
 def log_result(args, result):
     result_file = ""
+
+    # if result file is specified with suffix '.json', use json.dump to save result
+    if args.result.endswith(".json"):
+        if not os.path.exists(os.path.dirname(args.result)):
+            l.error("The Specified Output file does not exists.")
+            return
+        json.dump(result, open(args.result, 'w'))
+        return
+
     if len(args.result)>0:
         result_file = args.result
     else:

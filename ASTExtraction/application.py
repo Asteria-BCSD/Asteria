@@ -5,32 +5,28 @@ yangshouguo
 yangshouguo@iie.ac.cn
 '''
 import os,sys
-
-sys.path.append("/root/treelstm.pytorch/ysg_treelstm")
-sys.path.append("/root/treelstm.pytorch")
+root_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(root_dir)
 import logging
 import torch, numpy
 import gevent, datetime
 from math import exp
 from config import parse_args
-from ysg_treelstm.Tree import Tree
-from ysg_treelstm.model_binarytree import SimilarityBinaryTreeLSTM
+from Tree import Tree
 import time
 from sklearn.metrics.pairwise import cosine_similarity
-from ysg_treelstm.model_others import Sieamens
-from ysg_treelstm.model import get_tree_flat_nodes
-from ysg_treelstm.datahelper_mysql import DataHelper
-from ysg_treelstm.datahelper import DataHelper as old_DataHelper
+from model import get_tree_flat_nodes
+from datahelper import DataHelper as old_DataHelper
 from tqdm import tqdm
 logger = logging.getLogger("application.py")
 logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)
 from multiprocessing import Pool, cpu_count
 import json
 #os.environ["CUDA_VISIBLE_DEVICES"] = "7"
 DB_CONNECTION = None #全局数据库连接
-datahelper = DataHelper()
 old_datahelper = old_DataHelper()
+datahelper = old_datahelper
 class Application():
     '''
     这个类加载训练好的模型，对提供的ast进行计算相似度，提供以下功能：
@@ -59,7 +55,7 @@ class Application():
             self.model = model
         else:
             if model_name=="treelstm":
-                from ysg_treelstm.model import SimilarityTreeLSTM
+                from model import SimilarityTreeLSTM
                 self.model = SimilarityTreeLSTM(
                     self.args.vocab_size,
                     self.args.input_dim,
@@ -68,35 +64,6 @@ class Application():
                     self.args.num_classes,
                     device=self.device
                 )
-            elif model_name == "treelstm_boosted":
-                from ysg_treelstm.model_mutilprocess import SimilarityTreeLSTM
-                self.model = SimilarityTreeLSTM(
-                    self.args.vocab_size,
-                    self.args.input_dim,
-                    self.args.mem_dim,
-                    self.args.hidden_dim,
-                    self.args.num_classes,
-                    device=self.device
-                )
-            elif model_name == "binarytreelstm":
-                self.model = SimilarityBinaryTreeLSTM(
-                    self.args.vocab_size,
-                    self.args.input_dim,
-                    self.args.mem_dim,
-                    self.args.hidden_dim,
-                    self.args.num_classes,
-                    device=self.device
-                )
-            else:
-                self.model = Sieamens(
-                    self.args.vocab_size,
-                    self.args.input_dim,
-                    self.args.mem_dim,
-                    self.args.hidden_dim,
-                    self.args.num_classes,
-                    modelstr=self.args.model_selector)
-
-
         self.load_model(load_path, self.model)
 
     def load_model(self, path, model):
@@ -106,7 +73,7 @@ class Application():
         :return:
         '''
         if not os.path.isfile(path):
-            print("model path %s non-exists")
+            print("model path %s non-exists" % path)
             raise Exception
         checkpoint = torch.load(path, map_location=self.device)
         if "auc" in checkpoint:
@@ -126,6 +93,25 @@ class Application():
         with torch.no_grad():
             state, hidden = self.embmodel(tree, get_tree_flat_nodes(tree).to(self.device))
             return state.detach().squeeze(0).cpu().numpy()
+
+    def similarity_treeencoding_with_correction(self, ltree, rtree, lcallee, rcallee):
+        '''
+        :param ltree: encoding vector
+        :param rtree: AST2
+        :param lcallee:AST1对应函数的callee个数 (caller, callee)
+        :param rcallee:AST2多应函数的callee个数 (caller, callee)
+        :return:
+        '''
+
+        sim_tree = self.similarity_vec(ltree, rtree)
+        # return sim_tree
+        # scale lcallee and rcallee in case that zero vector
+        lcallee = list(map(lambda x: x + 1, lcallee))
+        rcallee = list(map(lambda x: x + 1, rcallee))
+
+        cs = cosine_similarity([lcallee], [rcallee])[0][0]  # （caller,callee）对之间的余弦距离
+        scale = exp(0 - abs(lcallee[-1] - rcallee[-1]))
+        return sim_tree * scale * cs
 
     def similarity_tree_with_correction(self, ltree, rtree, lcallee, rcallee):
         '''
@@ -195,7 +181,7 @@ class Application():
         
         return DB_CONNECTION
 
-    def encode_ast_in_db(self, db_path, table_name="default"):
+    def encode_ast_in_db(self, db_path, table_name="function"):
         '''
         对数据库中的树利用训练好的模型进行编码，得到向量，保存到新的表
         :param db_path: 数据库路径
@@ -213,22 +199,20 @@ class Application():
         try:
             cur.execute(sql_create_new_table)
             db_conn.commit()
-        except Exception:
-            logger.error("sql %s failed" % sql_create_new_table)
+        except Exception as e:
+            logger.error("sql [%s] failed" % sql_create_new_table)
+            logger.error(e)
         finally:
             cur.close()
         to_encode_list = []
 
         global datahelper
-        for func_info, func_ast in tqdm(old_datahelper.get_functions(db_path, 1, 10), desc="Load Database: "):
+        for func_info, func_ast in old_datahelper.get_functions(db_path):
             to_encode_list.append((func_info, func_ast))
 
-        encode_group = []
-        count = 0
-        for to_encode_tuple in tqdm(to_encode_list, desc= "Encoding: "):
-            count+=1
-            encode_group.append(to_encode_tuple)
-        logger.info("Encoding for %d ast" % count)
+        encode_group = to_encode_list
+
+        logger.info("Encoding for %d ast" % len(encode_group))
         self.encode_and_update(db_path, encode_group, table_name)
 
 
@@ -254,15 +238,15 @@ class Application():
         '''
         对functions中的 func_ast 利用神经网络进行编码
         :param functions:
-        :param table_name: 将编码保存到该表
+        :param table_name: the new table to save ast encodings
         :return:
         '''
         db_conn = self.get_conn(db_path)
         p = Pool(processes=10)
         res = []
         count = 1
-        for func_info, func_ast in tqdm(functions, desc="Adding to pool : "):
-            res.append((p.apply_async(self.func_wrapper, (self.encode_ast, func_ast)), func_info[0], func_info[1])) # func_info[0] is function name; 1 is elf_path
+        for func_info, func_ast in functions:
+            res.append((p.apply_async(self.func_wrapper, (self.encode_ast, func_ast)), func_info[0], func_info[1])) # func_info[0] is function name; func_info[1] is elf_path
             count+=1
         #try:
         p.close()
@@ -270,23 +254,25 @@ class Application():
         result = []
         try:
             logger.info("Fetching encode results!")
-            for idx, r in enumerate(res):
-                result.append((r[1], r[2], json.dumps(r[0].get().tolist())))
+            for idx, r in tqdm(enumerate(res)):
+                result.append((json.dumps(r[0].get().tolist()), r[1], r[2]))
             logger.info("All encode fetched!")
         except Exception as e:
             print("Exception when fetching {}".format(str(e)))
         try:
             logger.info("Writing encoded vectors to database")
             cur = db_conn.cursor()
-            sql_updatetable = "insert into %s (function_name, elf_path, ast_encode)"  % table_name + " values (%s,%s,%s)"
+            sql_update = """ 
+            update {} set ast_encode=? where function_name=? AND elf_path=?
+            """.format(table_name)
+            #sql_updatetable = "insert into %s (function_name, elf_path, ast_encode)"  % table_name + " values (?,?,?)"
             #for t in result:
-            rows = cur.executemany(sql_updatetable, result)
+            cur.executemany(sql_update, result)
             cur.close()
             db_conn.commit()
-            logger.info("Total number of rows insert %d" % rows)
         except Exception as e:
             db_conn.rollback()
-            print("Error when INSERT\n")
+            print("Error when INSERT [{}]\n".format(sql_update))
             print(e)
         #cur.close()
 
@@ -349,7 +335,7 @@ def time_consumption_statistics():
         f.write("Time details : %s \n" % str(Sim_Time_Statistic))
 
 
-def test():
+def aaaaaa():
     def average_time(size_times, size_start, size_end):
         times = list(map(lambda x:x[1], filter(lambda x:x[0] >= size_start and x[0] <= size_end, size_times)))
         if len(times) <1:
@@ -411,14 +397,22 @@ def generate_openssl_ast_encode():
         p = os.path.join(db_path, name)
         app.encode_ast_in_db(p)
 
+def parse_args_in_app():
+    '''
+    :return:The args in dict
+    '''
+    from argparse import ArgumentParser
+    ap = ArgumentParser()
+    ap.add_argument("--dbpath", type=str,
+                    help="the path to sqlite db file where asts are saved")
+    ap.add_argument("--checkpoint", type=str,
+                    default=os.path.join(root_dir, "saved_model.pt"))
+    return ap.parse_args()
+
+
 if __name__ == '__main__':
-    test()
-    # time_consumption_statistics()
-    # generate_openssl_ast_encode()
-    # db_names = [""]
-    """db_path = "/root/data/firmwares/Netgearfirmwares.sqlite"
-    app = Application(load_path="/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/crossarch.pt", )
-    app.encode_ast_in_db(db_path, table_name="NormalTreeLSTM")"""
-    #app.encode_ast_in_db("/root/data/firmwares/vul.sqlite")
-    # app.encode_ast_in_db("/root/data/firmwares/Dlinkfirmwares.sqlite")
+    args = parse_args_in_app()
+    if args.dbpath:
+        app = Application(load_path=args.checkpoint)
+        app.encode_ast_in_db(args.dbpath)
 
