@@ -44,7 +44,7 @@ logger.handlers[0].setFormatter(
     logging.Formatter("[%(filename)s][%(levelname)s] %(message)s\t(%(module)s:%(funcName)s)"))
 logger.handlers[1].setFormatter(
     logging.Formatter("[%(filename)s][%(levelname)s] %(message)s\t(%(module)s:%(funcName)s)"))
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.ERROR)
 
 
 # logging.basicConfig(format='[%(filename)s][%(levelname)s] %(message)s\t(%(module)s:%(funcName)s)',
@@ -249,6 +249,13 @@ class MyForm(Form):
             if 'win32' in str(sys.platform).lower():
                 startupinfo.dwFlags = subprocess.CREATE_NEW_CONSOLE | subprocess.STARTF_USESHOWWINDOW
                 startupinfo.wShowWindow = subprocess.SW_HIDE
+
+            p = subprocess.Popen(cmd, startupinfo=startupinfo,
+                                 stdout=subprocess.PIPE)  # , stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=0)
+            while p.poll() == None:
+                idaapi.msg(p.stdout.read(1))
+            return p.returncode
+
         p = subprocess.Popen(cmd,
                              startupinfo=startupinfo)  # , stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=0)
         # while p.poll() == None:
@@ -272,7 +279,7 @@ class MyForm(Form):
                                                                self._sqlitefilepath)
             logger.info("Calculation CMD: {}".format(cmd))
             ida_kernwin.show_wait_box("Calculating... Please wait.")
-            returncode = self.invoke_system_python(cmd, hidden_window=False)
+            returncode = self.invoke_system_python(cmd, hidden_window=True)
             ida_kernwin.hide_wait_box()
             if returncode:
                 # cmd execution fails
