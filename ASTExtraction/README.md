@@ -46,5 +46,5 @@ optional arguments:
 3. To Calculate Similarity between all functions and functions in another database file with button `Function Similairty`.
     * Choose the sqlite file in which the **ast encodes have been generated**.
    aa
-[Result](./SimRes.PNG)
+![Result](https://github.com/Asteria-BCSD/Asteria/blob/master/ASTExtraction/SimRes.PNG)
     
