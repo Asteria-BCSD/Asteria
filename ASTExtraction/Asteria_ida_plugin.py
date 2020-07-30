@@ -180,7 +180,7 @@ class MyForm(Form):
             self,
             r"""STARTITEM 0
             Please choose your option.
-            <##Function Feature Genration:{iButton1}> <##Function Similarity:{iButton2}>
+            <##Function Feature Generation:{iButton1}> <##Function Similarity:{iButton2}>
             """,
             {
                 'iButton1': F.ButtonInput(self.db_generate),
@@ -250,11 +250,10 @@ class MyForm(Form):
                 startupinfo.dwFlags = subprocess.CREATE_NEW_CONSOLE | subprocess.STARTF_USESHOWWINDOW
                 startupinfo.wShowWindow = subprocess.SW_HIDE
 
-            p = subprocess.Popen(cmd, startupinfo=startupinfo,
-                                 stdout=subprocess.PIPE)  # , stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=0)
-            while p.poll() == None:
-                idaapi.msg(p.stdout.read(1))
-            return p.returncode
+            # p = subprocess.Popen(cmd,startupinfo= startupinfo, stdout=subprocess.PIPE)#, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=0)
+            # while p.poll() == None:
+            #     idaapi.msg(p.stdout.readline())
+            # return p.returncode
 
         p = subprocess.Popen(cmd,
                              startupinfo=startupinfo)  # , stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=0)
