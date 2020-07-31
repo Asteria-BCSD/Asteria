@@ -1,6 +1,6 @@
 #encoding=utf-8
 '''
-2019年12月16日
+20191206
 yangshouguo
 yangshouguo@iie.ac.cn
 '''
@@ -24,22 +24,19 @@ logger.setLevel(logging.ERROR)
 from multiprocessing import Pool, cpu_count
 import json
 #os.environ["CUDA_VISIBLE_DEVICES"] = "7"
-DB_CONNECTION = None #全局数据库连接
+DB_CONNECTION = None # global database connection object
 old_datahelper = old_DataHelper()
 datahelper = old_datahelper
 class Application():
     '''
-    这个类加载训练好的模型，对提供的ast进行计算相似度，提供以下功能：
-    1. 给定模型路径，加载模型
-    2. 给定ast，计算编码
-    3. 给定两个ast，计算相似度
+    This class loads the trained model and use the model to encode an ast into a vector and calculate the similarity between asts.
     '''
     def __init__(self, load_path, threshold = 0.5, cuda = False, model_name = "treelstm" , model = None):
         '''
-        :param load_path: 模型加载路径
-        :param cuda: bool : 是否使用GPU, 对数据库中ast进行多进程编码时必须为False
-        :param model_name: 使用的model类，可用 [treelstm, treelstm_boosted, binarytreelstm]
-        :param threshold: 阈值,取值范围 (0~1)，建议在0.5左右
+        :param load_path: the path to saved model. e.g. "saved_model.pt"
+        :param cuda: bool : whether GPU is utilized when model calculation. Notice that you need install the torch gpu version.
+        :param model_name: the model type used. Only the "treelstm" is supported in this script.
+        :param threshold: decided what similarity scores are outputted.
         :param model: A network variant of Tree-LSTM
         '''
         self.args = parse_args(["--cuda"]) #TODO argparse
@@ -68,8 +65,8 @@ class Application():
 
     def load_model(self, path, model):
         '''
-        :param path: 模型路径
-        :param model: 使用的model类，例如 SplitedTreeLSTM
+        :param path: path to saved model
+        :param model: the model loaded
         :return:
         '''
         if not os.path.isfile(path):
@@ -87,8 +84,8 @@ class Application():
 
     def encode_ast(self, tree):
         '''
-        :param tree: root节点， Tree 对象
-        :return: 一个numpy向量 （64 or 150维）
+        :param tree: An Tree object instance
+        :return: a numpy vector （64 or 150 d）
         '''
         with torch.no_grad():
             state, hidden = self.embmodel(tree, get_tree_flat_nodes(tree).to(self.device))
@@ -96,10 +93,10 @@ class Application():
 
     def similarity_treeencoding_with_correction(self, ltree, rtree, lcallee, rcallee):
         '''
-        :param ltree: encoding vector
-        :param rtree: AST2
-        :param lcallee:AST1对应函数的callee个数 (caller, callee)
-        :param rcallee:AST2多应函数的callee个数 (caller, callee)
+        :param ltree: tree encoding vector
+        :param rtree: tree encoding vector
+        :param lcallee: (caller, callee) corresponds to ltree
+        :param rcallee: (caller, callee) corresponds to rtree
         :return:
         '''
 
@@ -109,7 +106,7 @@ class Application():
         lcallee = list(map(lambda x: x + 1, lcallee))
         rcallee = list(map(lambda x: x + 1, rcallee))
 
-        cs = cosine_similarity([lcallee], [rcallee])[0][0]  # （caller,callee）对之间的余弦距离
+        cs = cosine_similarity([lcallee], [rcallee])[0][0]  # cosine distance
         scale = exp(0 - abs(lcallee[-1] - rcallee[-1]))
         return sim_tree * scale * cs
 
@@ -117,8 +114,8 @@ class Application():
         '''
         :param ltree: AST1
         :param rtree: AST2
-        :param lcallee:AST1对应函数的callee个数 (caller, callee)
-        :param rcallee:AST2多应函数的callee个数 (caller, callee)
+        :param lcallee: (caller, callee) corresponds to ltree
+        :param rcallee:(caller, callee) corresponds to rtree
         :return:
         '''
 
@@ -128,15 +125,15 @@ class Application():
         lcallee=list(map(lambda x:x+1, lcallee))
         rcallee=list(map(lambda x:x+1, rcallee))
 
-        cs = cosine_similarity([lcallee], [rcallee])[0][0] # （caller,callee）对之间的余弦距离
+        cs = cosine_similarity([lcallee], [rcallee])[0][0] # （caller,callee）
         scale = exp(0 - abs(lcallee[-1]-rcallee[-1]))
         return sim_tree * scale * cs
 
     def similarity_tree(self, ltree, rtree):
         '''
-        利用神经网络treelstm 计算两个 抽象语法树 之间的相似度，树之间没有先后关系
-        :param ltree:  第一个树
-        :param rtree:  第二个树
+        calculate the similarity of two asts
+        :param ltree:  first tree
+        :param rtree:  first tree
         :return:
         '''
         with torch.no_grad():
@@ -152,10 +149,10 @@ class Application():
 
     def similarity_vec(self, lvec, rvec):
         '''
-        传入树已经编码好的向量，计算相似度
+        calculate the similarity of two ast encodings
         :param lvec: numpy.ndarray or torch.tensor
         :param rvec:
-        :return: 一个实数 0~1 之间，
+        :return: similairty score ranges 0~1.
         '''
         if type(lvec) is list:
             lvec = numpy.array(lvec)
@@ -173,23 +170,21 @@ class Application():
             return res
 
     def get_conn(self, db):
+        # return the database connection
         global DB_CONNECTION
         if DB_CONNECTION is None:
             global datahelper
             DB_CONNECTION = datahelper.load_database(db)
-            #DB_CONNECTION.execute('pragma journal_mode = wal')
-        
         return DB_CONNECTION
 
     def encode_ast_in_db(self, db_path, table_name="function"):
         '''
-        对数据库中的树利用训练好的模型进行编码，得到向量，保存到新的表
-        :param db_path: 数据库路径
-        :return:
+        Encode the asts in db file "db_path" and save the encoding vectors into table 'table_name'
+        :param db_path: path to sqlite database
         '''
         db_conn = self.get_conn(db_path)
         cur = db_conn.cursor()
-        #创建表
+        # create table if not exists
         sql_create_new_table = """CREATE TABLE if not exists %s (
                             function_name varchar (255),
                             elf_path varchar (255),
@@ -205,22 +200,19 @@ class Application():
         finally:
             cur.close()
         to_encode_list = []
-
         global datahelper
         for func_info, func_ast in old_datahelper.get_functions(db_path):
             to_encode_list.append((func_info, func_ast))
-
         encode_group = to_encode_list
-
         logger.info("Encoding for %d ast" % len(encode_group))
         self.encode_and_update(db_path, encode_group, table_name)
-
 
     def __del__(self):
         if self.db:
             self.db.close()
 
     def func_wrapper(self, func, *args):
+        # to execute the function in a limited period time
         self.Timeout = 350 #8 minutes
         gevent.Timeout(self.Timeout, Exception).start()
         s = datetime.datetime.now()
@@ -236,10 +228,9 @@ class Application():
             return r
     def encode_and_update(self, db_path, functions, table_name):
         '''
-        对functions中的 func_ast 利用神经网络进行编码
-        :param functions:
+        encode asts of the functions into vectors
+        :param functions: a list contains asts to be encoded
         :param table_name: the new table to save ast encodings
-        :return:
         '''
         db_conn = self.get_conn(db_path)
         p = Pool(processes=10)
@@ -265,8 +256,6 @@ class Application():
             sql_update = """ 
             update {} set ast_encode=? where function_name=? AND elf_path=?
             """.format(table_name)
-            #sql_updatetable = "insert into %s (function_name, elf_path, ast_encode)"  % table_name + " values (?,?,?)"
-            #for t in result:
             cur.executemany(sql_update, result)
             cur.close()
             db_conn.commit()
@@ -274,120 +263,13 @@ class Application():
             db_conn.rollback()
             print("Error when INSERT [{}]\n".format(sql_update))
             print(e)
-        #cur.close()
+        #cur.cose()
 
-def time_consumption_statistics():
-    app = Application(load_path="/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/crossarch.pt")
-    dataset = torch.load("/root/treelstm.pytorch/data/cross_arch.pth")
-    AST_SIZE_GROUP = [[] for i in range(5)] # 按照不同大小对AST进行分组存储，分别对应 0~20, 20~40 ... , 80~100. 每个分组存储100个
-    ast_size = 0
-    interval = 50
-    GROUP_SIZE = 100
-    for i in range(len(AST_SIZE_GROUP)):
-        ast_size = i*interval
-        logger.info("Making size %d" % ast_size)
-        for tup in dataset:
-            if tup[0][-1].size() > ast_size and tup[0][-1].size() < ast_size+interval:
-                AST_SIZE_GROUP[i].append(tup[0][-1])
-                if len(AST_SIZE_GROUP[i]) >= GROUP_SIZE:
-                    break
-            if tup[1][-1].size() > ast_size and tup[1][-1].size() < ast_size+interval:
-                AST_SIZE_GROUP[i].append(tup[1][-1])
-                if len(AST_SIZE_GROUP[i]) >= GROUP_SIZE:
-                    break
-
-    #===统计编码时间===
-    import datetime
-    TIME_encode = [0 for i in range(5)]
-    TIME_encode_distribution = []
-    ENCODE_SIZE_GROUP = []
-    for i in tqdm(range(len(AST_SIZE_GROUP)),desc="encode time"):
-        start_time = datetime.datetime.now()
-        for ast in AST_SIZE_GROUP[i]:
-            s = datetime.datetime.now()
-            ENCODE_SIZE_GROUP.append(app.encode_ast(ast))
-            e = datetime.datetime.now()
-            TIME_encode_distribution.append((ast.size(), (e-s).total_seconds()))
-        end_time = datetime.datetime.now()
-        TIME_encode[i] = (end_time-start_time).total_seconds()
-
-    # === 统计不同量级相似度计算时间 量级 1v1, 1v50, 1v100, 1v150, 1v200, 1v250, 1v300
-    TIME_SIMILARITY = [0 for i in range(5)]
-    source = ENCODE_SIZE_GROUP[0]
-    Sim_Time_Statistic = []
-    start_time = datetime.datetime.now()
-    for i in tqdm(range(len(ENCODE_SIZE_GROUP)),desc="cal time"):
-        s = datetime.datetime.now()
-        app.similarity_vec(source, ENCODE_SIZE_GROUP[i])
-        e = datetime.datetime.now()
-        Sim_Time_Statistic.append((TIME_encode_distribution[i][0], (e-s).total_seconds()))
-    end_time = datetime.datetime.now()
-    time_sim = (end_time-start_time).total_seconds()
-    with open("time_consumption_statistics.log","a") as f:
-        f.write("#=== Time Statistics for paper\n")
-        f.write("\tTime: %s \n" %(datetime.datetime.now()))
-        f.write("Encoding Time:\n")
-        for i in range(len(TIME_encode)):
-            f.write("Size %d~%d: %f\n" % (i, i+interval, TIME_encode[i]/GROUP_SIZE))
-        f.write("Encode distribution : %s\n" % str(TIME_encode_distribution))
-        f.write("\tCalculation Time:\n")
-        f.write("%d calculation cost %f seconds\n" %(len(ENCODE_SIZE_GROUP), time_sim))
-        f.write("Time details : %s \n" % str(Sim_Time_Statistic))
-
-
-def aaaaaa():
-    def average_time(size_times, size_start, size_end):
-        times = list(map(lambda x:x[1], filter(lambda x:x[0] >= size_start and x[0] <= size_end, size_times)))
-        if len(times) <1:
-            print("Range from {} to {} no Record in function average_time.".format(size_start, size_end))
-            return 0
-        return sum(times)/len(times)
-
-
-    app = Application(load_path =
-                      "/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/crossarch_buildroot_all.pt",
-                      model_name="treelstm")
-    dataset = torch.load("/root/treelstm.pytorch/data/cross_arch.pth") # 数据集
-    time_recorder = [] # (size, encoding_time)
-    encoding_tuple = []
-    for idx in tqdm(range(len(dataset))):
-        source, target, label = dataset[idx]
-        source_tree = source[-1]
-        target_tree = target[-1]
-        if source_tree.size()>300 or target_tree.size() > 300:
-            continue
-        source_encode = app.encode_ast(source_tree)
-        target_encode = app.encode_ast(target_tree)
-        encoding_tuple.append((source_tree.size(),
-                               torch.tensor(source_encode).unsqueeze(0),
-                               torch.tensor(target_encode).unsqueeze(0)))
-    with torch.no_grad():
-        for s_size, s, t in encoding_tuple:
-            start_time = datetime.datetime.now()
-            app.model.similarity(s, t)[0][1].float().item()
-            end_time = datetime.datetime.now()
-            time_recorder.append((s_size, (end_time-start_time).microseconds))
-
-    with open("time_consumption_statistics.log", "a") as f:
-        f.write("Time : {} For calculations\n".format(datetime.datetime.now()))
-        ave = average_time(time_recorder, 1, 50)
-        f.write("Size range in [{} , {}] Average Encoding Time: {}\n".format(1, 50, ave))
-        ave = average_time(time_recorder, 51, 100)
-        f.write("Size range in [{} , {}] Average Encoding Time: {}\n".format(51, 100, ave))
-        ave = average_time(time_recorder, 101, 150)
-        f.write("Size range in [{} , {}] Average Encoding Time: {}\n".format(101, 150, ave))
-        ave = average_time(time_recorder, 151, 200)
-        f.write("Size range in [{} , {}] Average Encoding Time: {}\n".format(151, 200, ave))
-        ave = average_time(time_recorder, 201, 250)
-        f.write("Size range in [{} , {}] Average Encoding Time: {}\n".format(201, 250, ave))
-        ave = average_time(time_recorder, 251, 300)
-        f.write("Size range in [{} , {}] Average Encoding Time: {}\n".format(251, 300, ave))
-        f.write("{}\n".format(str(time_recorder)))
 
 
 def generate_openssl_ast_encode():
     '''
-    生成openssl数据集的ast的编码
+    sample code for ast encoding
     :return:
     '''
     db_names = ["ARM.sqlite",  "PPC.sqlite",  "X64.sqlite",  "X86.sqlite"]

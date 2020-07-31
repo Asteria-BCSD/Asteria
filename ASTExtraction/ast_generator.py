@@ -53,7 +53,6 @@ load_plugin_decompiler()
 
 #-----------------------------------
 
-
 #--------------------------
 spliter = "************"
 class Visitor(idaapi.ctree_visitor_t):

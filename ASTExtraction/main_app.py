@@ -1,11 +1,11 @@
 #encoding=utf-8
 '''
 author: yangshouguo
-date: 2019年12月24日
+date: 20191204
 email: 891584158@qq.com
 '''
 
-# 应用训练好的模型，进行函数相似度计算
+# perform similarity calculation based on 'application.py'
 import os, sys
 from math import exp
 root_dir = os.path.dirname(os.path.abspath(__file__))
@@ -30,10 +30,10 @@ l.addHandler(logging.FileHandler("./log/main_app.log"))
 l.setLevel(logging.INFO)
 class Asteria():
     '''
-    功能点：
-    1. 计算一个函数和多个函数之间的相似度
-    2. 计算多个函数和多个函数之间的相似度
-    3. 从数据库读取一个或者多个函数
+    Functions：
+    1. calculate the similarity between functions
+    2.  calculate the similarity between asts
+    3.  calculate the similarity between ast encodings
     '''
     def __init__(self, checkpoint_path, model_selector, cuda=False):
         #cuda = True
@@ -47,9 +47,9 @@ class Asteria():
 
     def ast_encode_similarity(self, sources = [], targets = [], threshold= 0):
         '''
-        :param sources:源ast_encode列表
-        :param targets: 目标ast_encode列表
-        :return: dict: key是源函数名+elf路径名字， value是list 包含其他函数和相似度 [(similarity, function_name, elf_path)]
+        :param sources:list: source asts
+        :param targets:list: target asts
+        :return: dict: key is function_name， value is a dict :{'rank':[], 'info':(function_name, elf_path, elf_file_name, caller, callee, ast_encode)}
         '''
         result = defaultdict(dict)
         for (function_name,elf_path,elf_name,scaller, scallee, ast_encode),_ in tqdm(sources):
@@ -77,7 +77,7 @@ class Asteria():
         '''
         :param ast1:
         :param ast2:
-        :return: 根据ast1 和 ast2 的大小进行预过滤。如果ast1 和 ast2 大小相差过大，返回1，跳过ast的编码计算。否则返回0
+        :return: if ast1 and ast2 are too different , return 1.
         '''
         c1 = ast1.num_children
         c2 = ast2.num_children
@@ -90,11 +90,11 @@ class Asteria():
 
     def ast_similarity(self, sources = [], targets = [], astfilter = None, threshold = 0):
         '''
-        :param sources:源ast列表
-        :param targets: 目标ast列表 [func_info, ast] ;
+        :param sources: list: source asts
+        :param targets: list: target asts
         func_info:[function_name, elf_path, elf_file_name, caller, callee, ast_encode]
-        :param astfilter: 过滤函数， 应该接受两个参数，第一个为源ast， 第二个为目的ast，如果返回True，则相似度为0
-        :return: dict: key是源函数名，rank是一个列表，对应目标函数信息，和相似度; info 存储本函数信息
+        :param astfilter: a filter function to filter out ast pairs which are too different.
+        :return: dict: key
         {'rank':[], 'info':(function_name, elf_path, elf_file_name, caller, callee, ast_encode)}
         '''
         result = {}

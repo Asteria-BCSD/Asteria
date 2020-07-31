@@ -110,29 +110,5 @@ class SimilarityTreeLSTM(nn.Module):
         return output
 
 
-def test_ChildSumTreeLSTM():
-    import Tree
-    trees =[]
-    for i in range(10,15):
-        t = Tree()
-        t.op = i
-        trees.append(t)
-    trees[0].add_child(trees[1])
-    trees[0].add_child(trees[2])
-    trees[2].add_child(trees[3])
-    trees[2].add_child(trees[4])
-    st = SimilarityTreeLSTM(80, 10, 16, 10, 2, torch.device("cpu"))
-    root = trees[0]
-    output = st(root,  root)
-    print(output)
-
-
-
-def test_detach():
-    input = torch.Tensor([1])
-    x = input.detach().new(1, 100).fill_(0.)
-    y = x.requires_grad_()
-    print(y)
 if __name__ == '__main__':
-    test_ChildSumTreeLSTM()
-    # test_detach()
+    pass

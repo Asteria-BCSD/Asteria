@@ -26,11 +26,11 @@ l.addHandler(logging.FileHandler(os.path.join(logpath,"datahelper.log")))
 l.addHandler(logging.StreamHandler())
 l.setLevel(logging.ERROR)
 '''
-功能：
-1. 加载多个数据库，进行数据查询
-2. 将查询得到的数据中AST进行恢复
-3. 将多个数据库中数据根据文件名和函数名进行组对；文件名和函数名相同，架构或endian或位数或编译优化不同，则为positive，否则，只要文件名以及函数名不同则negative
-4. 数据库schema
+Functions：
+1. connect database and query data
+2. recover the pickled ast
+3. orginize the ast pairs
+4. schema:
     sql = """create table if not exists function (
                     id integer primary key,
                     function_name varchar(255),
@@ -81,12 +81,12 @@ class DataHelper:
     def get_functions(self, db_path, start=-1, end=-1, where_suffix=None):
         '''
         :param db_path:
-        :param start: 开始查询的偏移量
-        :param end: 结束查询的偏移量
-        :param where_suffix: 限制查询的where子句
-        :return: A generator : 第一个元素是 函数的一些信息，
-        (函数名，elf路径名，elf文件名，调用函数数量，被调用函数数量，ast编码向量
-        ) 第二个是函数的ast
+        :param start: start offset of table
+        :param end: number of records to obtain
+        :param where_suffix: where condition
+        :return: A generator :
+        [(function_name，elf_path，elf_name，caller，callee，ast_encode
+        ) , ast]
         '''
         db = self.load_database(db_path)
         suffix = ""
@@ -108,8 +108,8 @@ class DataHelper:
 
     def get_function_ast_encode(self, db_path):
         '''
-        :param db_path: sqlite 数据库路径
-        :return: 函数名，elf文件路径，ast编码向量（需要使用 json.loads 恢复成list）
+        :param db_path: path to  sqlite db file
+        :return: function_name，elf_path，ast_encode (json.loads it before usage).
         '''
         db = self.load_database(db_path)
         sql = """select function_name, elf_path, ast_encode
@@ -124,8 +124,8 @@ class DataHelper:
 
     def make_target_set(self, db_list = [], rate=2):
         '''
-        :param db_list: list: 数据库文件列表
-        :param rate: 非同源函数对数量与同源函数对数量的比例
+        :param db_list: list:  database file pathes
+        :param rate: the ratio of non-homologous pairs and homologous pairs
         :return: list: {A:[target functions list]}
         '''
         pool = Pool(len(db_list)-1)
@@ -149,12 +149,12 @@ class DataHelper:
 
     def recvore_ast_tree(self, data, idx):
         '''
-        :param data: data[idx]是使用 pick.dumps 保存的字符串
-        :return: 将data[idx]使用pick.loads 加载的Tree对象
+        :param data: data[idx] is the data saved with pick.dumps
+        :return: pickle.loads(data[idx])
         '''
         for d in data:
             d[idx] = self.loads_ast_tree(d[idx])
-        return list(filter(lambda d:d[idx].size()>3, data))# 过滤AST大小小于3的AST
+        return list(filter(lambda d:d[idx].size()>3, data))# to filter out the asts with a size less than 3.
 
     def _make_cross_architecture_paires(self, arch1_db, arch2_db, non_homologous_pair_rate = 2, limit=""):
         '''

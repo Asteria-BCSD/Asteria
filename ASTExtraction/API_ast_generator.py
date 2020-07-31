@@ -10,7 +10,7 @@ import subprocess
 from datetime import datetime
 def parse_arg():
     argparser = argparse.ArgumentParser(description="AST generator script based on IDA and \033[1;31m Python3 \033[0m!")
-    argparser.add_argument("--ida_path", default="/opt/idapro7.3/idat",
+    argparser.add_argument("--ida_path",
                            help="path to idal(before 7.2) or idat(after 7.2) with decompiler plugins, idal64 for 64bit binary(also for 32bit)")
     argparser.add_argument("--binary", help="path to binary to be analysed")
     argparser.add_argument("--directory", help="A path where all binaries in the dir will be analysed. --binary will not work if this option specified")
