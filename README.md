@@ -21,6 +21,9 @@ This is the official repository for Asteria.
 
 # Usage
 
+## use as ida plugin
+see [readme](https://github.com/Asteria-BCSD/Asteria/blob/master/ASTExtraction/README.md)
+
 ## Vulnerability Search
 `python application/main_app.py "database of vulnerable functions" "database of firmware functions`
 ### For example:
@@ -51,3 +54,4 @@ Since the buildroot dataset we used is too large(28G), we construct a demo train
 After 60 epochs training, the model with best performance is saved in "checkpoints/crossarch.pt".
 
 The trained model parameters and settings in our work are placed in "data/saved_model.pt"
+
