@@ -1,3 +1,20 @@
+# Use as IDA Plugin
+
+## install
+1. copy `Asteria_ida_plugin.py` to `/path/to/ida/plugin`. `/path/to/ida/plugin` is the plugin directory in your ida installation directory.
+2. copy the directory `ASTExtraction` to `/path/to/ida/python/`
+3. make sure the python libraries `numpy, torch, gevent, sklearn` have been installed in your local python environment
+
+## usage
+1. Use shortcut key `ALT+F1` or `Edit->Plugin->Asteria` to invoke the main menu
+
+2. To dump all/one AST feature(s) of function(s) to a database file with button `Function Feature Generation`.
+
+3. To Calculate Similarity between all functions and functions in another database file with button `Function Similairty`.
+    * Choose the sqlite file in which the **ast encodes have been generated**.
+   aa
+![Result](./SimRes.PNG)
+
 
 # command line usage
 ## 1. You just need to use the `API_ast_generator.py` to extract ASTs.
@@ -31,20 +48,5 @@ optional arguments:
 ```
 ## 2. use `application.py` encodes the asts of generated database.
 
-# Use as IDA Plugin
 
-## install
-1. copy `Asteria_ida_plugin.py` to `/path/to/ida/plugin`. `/path/to/ida/plugin` is the plugin directory in your ida installation directory.
-2. copy the directory `ASTExtraction` to `/path/to/ida/python/`
-3. make sure the python libraries `numpy, torch, gevent, sklearn` have been installed in your local python environment
-
-## usage
-1. Use shortcut key `ALT+F1` or `Edit->Plugin->Asteria` to invoke the main menu
-
-2. To dump all/one AST feature(s) of function(s) to a database file with button `Function Feature Generation`.
-
-3. To Calculate Similarity between all functions and functions in another database file with button `Function Similairty`.
-    * Choose the sqlite file in which the **ast encodes have been generated**.
-   aa
-![Result](https://github.com/Asteria-BCSD/Asteria/blob/master/ASTExtraction/SimRes.PNG)
     
