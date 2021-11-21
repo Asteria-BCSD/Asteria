@@ -54,7 +54,7 @@ class Model_Performance():
         predictions = []
         for res in result:
             predictions.append(res.get())
-        time_cost = (datetime.now()-start_time).seconds
+        time_cost = (datetime.now()-start_time).total_seconds()
         fpr, tpr, thresholds = roc_curve(np.array(lables), np.array(predictions))
         logger.info("===> architecture info : %s vs %s" % (arch1, arch2))
         logger.info("===> time: %s" % (datetime.now()))

@@ -1,17 +1,17 @@
 #encoding=utf-8
 '''
-author: yangshouguo
-date: 2019年12月24日
-email: 891584158@qq.com
+date: 20191224
 '''
 
-# 应用训练好的模型，进行函数相似度计算
+# conduct similarity calculation with trained model.
 import os, sys
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../')
+sys.path.append(ROOT)
 from math import exp
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),"../../"))
-from ysg_treelstm.datahelper import DataHelper
-from ysg_treelstm.application.application import Application
-from ysg_treelstm.Tree import Tree # needed!
+import sqlite3
+from datahelper import DataHelper
+from application import Application
+from Tree import Tree # needed!
 from tqdm import tqdm
 import datetime
 from sklearn.metrics.pairwise import cosine_similarity
@@ -28,14 +28,14 @@ l.addHandler(logging.StreamHandler())
 l.setLevel(logging.INFO)
 class Asteria():
     '''
-    功能点：
-    1. 计算一个函数和多个函数之间的相似度
-    2. 计算多个函数和多个函数之间的相似度
-    3. 从数据库读取一个或者多个函数
+    functionality：
+    1. similarity between one function and a group of functions
+    2. similarity between two groups of functions
+    3. Load functions from database
     '''
     def __init__(self, checkpoint_path, model_selector, cuda=False):
         #cuda = True
-        self.dh = DataHelper() # 数据库读取
+        self.dh = DataHelper() # database
         self.checkpoint_path = checkpoint_path
         self.model_selector = model_selector
         self.cuda = cuda
@@ -45,36 +45,40 @@ class Asteria():
 
     def ast_encode_similarity(self, sources = [], targets = [], threshold= 0):
         '''
-        :param sources:源ast_encode列表
-        :param targets: 目标ast_encode列表
-        :return: dict: key是源函数名+elf路径名字， value是list 包含其他函数和相似度 [(similarity, function_name, elf_path)]
+        :param sources: source encoded ast vectors
+        :param targets: target encoded ast vectors
+        :return: dict: key is function name + elf path，
+                        value is a list of similarities: [(similarity, function_name, elf_path)]
         '''
         result = {}
         for function_name,elf_path,ast_encode in tqdm(sources):
             res = []
             pool = Pool(processes=cpu_count()-2)
+            ast_encode = json.loads(ast_encode)
             for tfunction_name,telf_path,tast_encode in tqdm(targets, desc="func %s" % function_name):
                 if tast_encode is None:
                     print("%s encode not exits" % tfunction_name)
-                res.append((pool.apply_async(self.compute_app.similarity_vec, (json.loads(ast_encode), json.loads(tast_encode))),
+                # res.append((pool.apply_async(self.compute_app.similarity_vec, (json.loads(ast_encode), json.loads(tast_encode))),
+                #             tfunction_name, telf_path))
+                res.append((self.compute_app.similarity_vec(ast_encode, json.loads(tast_encode)),
                             tfunction_name, telf_path))
-            pool.close()
-            pool.join()
+            # pool.close()
+            # pool.join()
             similarity_list = []
             for r in res:
                 sim = r[0].get()
                 similarity_list.append((sim, r[1], r[2]))
-            similarity_list.sort(key=lambda x: x[0], reverse=True) # 排序
+            similarity_list.sort(key=lambda x: x[0], reverse=True) #
             result[function_name+"+"+elf_path] = similarity_list
         return result
 
     def ast_similarity(self, sources = [], targets = [], astfilter = None, threshold = 0):
         '''
-        :param sources:源ast列表
-        :param targets: 目标ast列表 [func_info, ast] ;
+        :param sources: source  ast
+        :param targets: target  ast
         func_info:[function_name, elf_path, elf_file_name, caller, callee, ast_encode]
-        :param astfilter: 过滤函数， 应该接受两个参数，第一个为源ast， 第二个为目的ast，如果返回True，则相似度为0
-        :return: dict: key是源函数名，rank是一个列表，对应目标函数信息，和相似度; info 存储本函数信息
+        :param astfilter:
+        :return: dict:
         {'rank':[], 'info':(function_name, elf_path, elf_file_name, caller, callee, ast_encode)}
         '''
         result = {}
@@ -92,7 +96,7 @@ class Asteria():
                         s_ast, t_ast,[s_func_info[-3],s_func_info[-2]],[func_info[-3], func_info[-2]])])
 
             res = list(filter(lambda x:x[1]>threshold, res))
-            res.sort(key=lambda x: x[1], reverse=True) # 排序
+            res.sort(key=lambda x: x[1], reverse=True) #
 
             result[s_func_info[0]]['rank'] = res
             result[s_func_info[0]]['info'] = s_func_info
@@ -112,34 +116,57 @@ class Asteria():
         elf_names = set()
         where_suffix = ""
         #where_suffix = " where function_name like 'EVP_EncodeUpdate' " # TODO delete this line;
-        for func in list(self.dh.get_functions(source_db, where_suffix=where_suffix)):
-            # limit vul function number
-            source_asts.append(func)
-            elf_names.add("'"+func[0][2].split('.')[0]+"%'")
-        elf_files = " or ".join(elf_names)
-        # where_suffix = " where elf_file_name like %s" % elf_files
-        #l.info("[DB] the firmware select filter is %s" % where_suffix)
-        for func in self.dh.get_functions(target_db, start=start, end=end, where_suffix=where_suffix):
-            target_asts.append(func)
-
         if ast:
-            return self.ast_similarity(source_asts, target_asts, threshold=threshold)
+            for func in list(self.dh.get_functions(source_db, where_suffix=where_suffix)):
+                # limit vul function number
+                source_asts.append(func)
+                elf_names.add("'"+func[0][2].split('.')[0]+"%'")
+
+            elf_files = "libcrypto%"
+            where_suffix = " where function_name is '{0}'  union " \
+                           "select function_name, elf_path, elf_file_name, caller, callee, ast_encode, ast_pick_dump from function " \
+                           "where function_name is not '{0}' limit 200".format(
+                'EVP_EncodeUpdate'
+            )
+            #l.info("[DB] the firmware select filter is %s" % where_suffix)
+            print('Loading target functions...')
+            for func in self.dh.get_functions(target_db, start=start, end=end, where_suffix=where_suffix):
+                target_asts.append(func)
+            return self.ast_similarity(source_asts[:1], target_asts, threshold=threshold)
+
         else:
-            return self.ast_encode_similarity(source_asts, target_asts, threshold=threshold)
 
+            try:
+                asts = list(self.dh.get_function_ast_encode(source_db))
+            except sqlite3.OperationalError as e:
+                asts = list(self.dh.get_functions(source_db, where_suffix=where_suffix))
+                newasts = []
+                for s_info, s_ast in asts:
+                    newasts.append((s_info[0], s_info[1], json.dumps(self.compute_app.encode_ast(s_ast).tolist())))
+                asts = newasts
+            try:
+                elf_files = "libcrypto%"
+                where_suffix = " where elf_path like '%%%s%%'" % elf_files
+                target_asts = list(self.dh.get_function_ast_encode(target_db, where_suffix=where_suffix))
+            except sqlite3.OperationalError as e:
+                print(e)
+                print("Please use encode_ast_in_db() in application to generate the encodings first")
 
+            return self.ast_encode_similarity(asts, target_asts, threshold=threshold)
+
+import distutils
 def parse_args():
     ap = ArgumentParser()
     ap.add_argument("source_db", type=str,
                     help="source sqlite db file path, usually vulnerability function database")
     ap.add_argument("target_db", type=str,
                     help="target sqlite db file path, usually firmware function database")
-    ap.add_argument("--use_ast", type=bool, default=True,
-                    help="use ast not ast_encode to compute similarity(default True)")
+    ap.add_argument("--use_ast", dest='use_ast', action='store_true', default=False,
+                    help="use ast not ast_encode to compute similarity (default True)")
     ap.add_argument("--threshold", type=str, default="0.9",
                     help="The similarity threshold to filter candidate functions(default 0.9)")
     ap.add_argument("--checkpoint", type=str,
-                    default="/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/crossarch_buildroot.pt",
+                    default="/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/train_after_hash_calculated.pt",
                     help="pytorch model checkpoint path")
     ap.add_argument("--model_selector", type=str, default="treelstm", choices=['treelstm','binarytreelstm','lstm'])
     ap.add_argument("--result", type=str, default="", help="file path to save search results")
@@ -167,7 +194,7 @@ def binary_treelstm_search(): #search bugs with binary treelstm
     if threshold<0 or threshold>1:
         print("Threshold Value Error! range is 0~1!")
         exit(1)
-    result = aa.db_similarity(args.source_db, args.target_db, args.use_ast, threshold=threshold)
+    result = aa.db_similarity(args.source_db, args.target_db, args.use_ast, threshold=threshold, start=1, end=100)
     log_result(args, result)
     exit(0)
 

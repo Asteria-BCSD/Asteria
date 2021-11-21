@@ -8,6 +8,7 @@ class Tree(object):
         self.op = None #
         self.value = None #
         self.opname = "" #
+
     def add_child(self, child):
         child.parent = self
         self.num_children += 1

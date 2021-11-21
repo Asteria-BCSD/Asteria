@@ -2,7 +2,6 @@
 '''
 author: yangshouguo
 date: 20191204
-email: 891584158@qq.com
 '''
 
 # perform similarity calculation based on 'application.py'

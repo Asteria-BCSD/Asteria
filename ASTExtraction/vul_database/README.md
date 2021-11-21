@@ -1,0 +1,1 @@
+python .\API_ast_generator.py --ida_path D:\IDA70\idat.exe --binary .\vul_database\openssl-1.0.1s --database .\vul_database\vul.sqlite --function EVP_EncodeUpdate

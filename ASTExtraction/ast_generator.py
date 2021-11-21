@@ -23,14 +23,29 @@ l.addHandler(logging.FileHandler("ast_generator.log"))
 l.handlers[0].setFormatter(logging.Formatter("%(filename)s : %(message)s"))
 l.handlers[0].setLevel(logging.ERROR)
 l.handlers[1].setLevel(logging.INFO)
+IDA700 = False
+l.info("IDA Version {}".format(IDA_SDK_VERSION))
+if IDA_SDK_VERSION >= 700:
+# IDAPro 6.x To 7.x (https://www.hex-rays.com/products/ida/support/ida74_idapython_no_bc695_porting_guide.shtml)
+    l.info("Using IDA7xx API")
+    IDA700 = True
+    GetOpType = get_operand_type
+    GetOperandValue = get_operand_type
+    SegName = get_segm_name
+    autoWait = auto_wait
+    GetFunctionName = get_func_name
+    GetIdbPath = get_idb_path
+    GetInputFile = get_root_filename
+    GetInputFilePath = get_input_file_path
+    import ida_pro
+    Exit = ida_pro.qexit
 #---- prepare environment
 def wait_for_analysis_to_finish():
     '''
     :return:
     '''
     l.info('[+] waiting for analysis to finish...')
-    idaapi.autoWait()
-    idc.Wait()
+    autoWait()
     l.info('[+] analysis finished')
 
 def load_plugin_decompiler():
@@ -225,8 +240,12 @@ class Visitor(idaapi.ctree_visitor_t):
             # oprand.append(cexpr.ptrsize)
         elif cexpr.op == idaapi.cot_memref:
 
-            l.info('[memref]'+spliter)
-            # oprand.append(cexpr.m)
+            offset = Tree()
+            offset.op = idaapi.cot_num
+            offset.opname = "offset"
+            offset.addr = cexpr.ea
+            offset.value = cexpr.m
+            oprand.append(offset)
 
         elif cexpr.op == idaapi.cot_num:
             l.info ('[num]' + str(cexpr.n._value))
@@ -237,10 +256,24 @@ class Visitor(idaapi.ctree_visitor_t):
             oprand.append(AST)
 
         elif cexpr.op == idaapi.cot_var:
-            # var : cexpr.v
-            l.info ('[var]' + str(cexpr.v.idx))
-            # oprand.append(cexpr.v.idx) # which var (index for var)
-            # TODO handle array type
+
+            # 指针引用：数组，结构体等
+            var = cexpr.v
+            entry_ea = var.mba.entry_ea
+            idx = var.idx
+            ltree = Tree()
+            ltree.op = idaapi.cot_memptr
+            ltree.addr = cexpr.ea
+            ltree.opname = 'entry_ea'
+            ltree.value = entry_ea
+            oprand.append(ltree)
+            rtree = Tree()
+            rtree.value = idx
+            rtree.op = idaapi.cot_num
+            rtree.addr = cexpr.ea
+            rtree.opname = 'idx'
+            oprand.append(rtree)
+
         elif cexpr.op == idaapi.cot_str:
             # string constant
             l.info( '[str]' + cexpr.string)
@@ -366,16 +399,16 @@ class AstGenerator():
         for i in range(0, get_func_qty()):
             func = getn_func(i)
             self.progreeBar(int((i*1.0)/get_func_qty()*100))
-            segname = get_segm_name(getseg(func.startEA))
+            segname = get_segm_name(getseg(func.start_ea))
             if segname[1:3] not in ["OA", "OM", "te", "_t"]:
                 continue
-            func_name = GetFunctionName(func.startEA)
+            func_name = GetFunctionName(func.start_ea)
             if len(specical_name) > 0 and specical_name != func_name:
                 continue
             try:
                 ast_tree, pseudocode, callee_num, caller_num = fn(func)
                 # l.error("AST_TREE:"+type(ast_tree))
-                self.function_info_list.append((func_name, hex(func.startEA), pickle.dumps(ast_tree), pseudocode, callee_num, caller_num))
+                self.function_info_list.append((func_name, hex(func.start_ea), pickle.dumps(ast_tree), pseudocode, callee_num, caller_num))
             except Exception,e:
                 l.warning("%s error" % fn)
                 l.warning(str(e))
@@ -403,12 +436,12 @@ class AstGenerator():
         :return:
         '''
         try:
-            cfunc = idaapi.decompile(func.startEA)
+            cfunc = idaapi.decompile(func.start_ea)
             vis = Visitor(cfunc)
             vis.apply_to(cfunc.body, None)
             return vis.root, vis.get_pseudocode(), vis.get_callee(), vis.get_caller()
         except:
-            l.warning("Function %s decompilation failed" % (GetFunctionName(func.startEA)))
+            l.warning("Function %s decompilation failed" % (GetFunctionName(func.start_ea)))
             raise
 
 
@@ -426,4 +459,4 @@ if __name__ == '__main__':
     dbop = DBOP(args.database)
     astg.save_to(dbop)
     del dbop # free to call dbop.__del__() , flush database
-    idc.Exit(0)
+    Exit(0)

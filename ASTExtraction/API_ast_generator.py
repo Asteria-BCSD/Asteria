@@ -6,12 +6,13 @@ A script for facilitating the usage of ast_generator.py
 import sys, os, logging, argparse
 root = os.path.dirname(os.path.abspath(__file__))
 import subprocess
-
+platform = sys.platform
 from datetime import datetime
 def parse_arg():
     argparser = argparse.ArgumentParser(description="AST generator script based on IDA and \033[1;31m Python3 \033[0m!")
     argparser.add_argument("--ida_path",
-                           help="path to idal(before 7.2) or idat(after 7.2) with decompiler plugins, idal64 for 64bit binary(also for 32bit)")
+                           help="path to idal(before 7.2) or idat(after 7.2) with decompiler plugins, idal64 for 64bit binary(also for 32bit)",
+                           required=True)
     argparser.add_argument("--binary", help="path to binary to be analysed")
     argparser.add_argument("--directory", help="A path where all binaries in the dir will be analysed. --binary will not work if this option specified")
     argparser.add_argument("--database", help="path to sqlite database to save the extracted asts", default="default.sqlite")
@@ -46,7 +47,10 @@ class AstGenerator():
         if self.args.function:
             IDA_ARGS.append("-f %s" % self.args.function)
         IDA_ARGS = " ".join(IDA_ARGS)
-        cmd_list = ["TVHEADLESS=1", self.args.ida_path, "-c" ,"-A", '-S"%s %s"' % (self.Script, IDA_ARGS), binary_path]
+        Header = ""
+        if platform == 'linux':
+            Header = "TVHEADLESS=1"
+        cmd_list = [Header, self.args.ida_path, "-c" ,"-A", '-S"%s %s"' % (self.Script, IDA_ARGS), binary_path]
         cmd = " ".join(cmd_list)
         p = subprocess.Popen(cmd, shell =True)
         try:
@@ -91,7 +95,10 @@ class AstGenerator():
 
 if __name__ == '__main__':
     args =parse_arg()
+    print(args)
     ag = AstGenerator(args)
+
+
     if args.directory:
         ag.extract_ast_from_dir(args.directory)
     elif args.binary and args.function:

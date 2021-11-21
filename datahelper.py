@@ -104,14 +104,13 @@ class DataHelper:
         cur.close()
         db.close()
 
-    def get_function_ast_encode(self, db_path):
+    def get_function_ast_encode(self, db_path, table_name = 'normaltreelstm', where_suffix = ""):
         '''
         :param db_path: sqlite 数据库路径
         :return: 函数名，elf文件路径，ast编码向量（需要使用 json.loads 恢复成list）
         '''
         db = self.load_database(db_path)
-        sql = """select function_name, elf_path, ast_encode
-         from function """
+        sql = """select function_name, elf_path, ast_encode from %s  %s """ % (table_name, where_suffix)
 
         cur = db.cursor()
         lines = cur.execute(sql)

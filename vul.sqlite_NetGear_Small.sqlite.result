@@ -1,0 +1,14 @@
+******Time: 2021-10-23 05:51:02.719320 ******
+******Args: Namespace(checkpoint='/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/train_after_hash_calculated.pt', model_selector='treelstm', result='', source_db='data/vul.sqlite', target_db='data/NetGear_Small.sqlite', threshold='0.9', use_ast=False) ******
+******Time: 2021-10-23 05:51:33.722804 ******
+******Args: Namespace(checkpoint='/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/train_after_hash_calculated.pt', model_selector='treelstm', result='', source_db='data/vul.sqlite', target_db='data/NetGear_Small.sqlite', threshold='0.9', use_ast=False) ******
+******Time: 2021-10-23 05:57:11.287486 ******
+******Args: Namespace(checkpoint='/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/train_after_hash_calculated.pt', model_selector='treelstm', result='', source_db='data/vul.sqlite', target_db='data/NetGear_Small.sqlite', threshold='0.9', use_ast=False) ******
+******Time: 2021-10-23 06:00:28.010882 ******
+******Args: Namespace(checkpoint='/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/train_after_hash_calculated.pt', model_selector='treelstm', result='', source_db='data/vul.sqlite', target_db='data/NetGear_Small.sqlite', threshold='0.9', use_ast=False) ******
+******Time: 2021-10-23 06:00:59.898577 ******
+******Args: Namespace(checkpoint='/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/train_after_hash_calculated.pt', model_selector='treelstm', result='', source_db='data/vul.sqlite', target_db='data/NetGear_Small.sqlite', threshold='0.9', use_ast=False) ******
+******Time: 2021-10-23 07:07:25.973529 ******
+******Args: Namespace(checkpoint='/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/train_after_hash_calculated.pt', model_selector='treelstm', result='', source_db='data/vul.sqlite', target_db='data/NetGear_Small.sqlite', threshold='0.9', use_ast=False) ******
+******Time: 2021-11-21 03:27:14.388246 ******
+******Args: Namespace(checkpoint='/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/train_after_hash_calculated.pt', model_selector='treelstm', result='', source_db='data/vul.sqlite', target_db='data/NetGear_Small.sqlite', threshold='0.9', use_ast=False) ******

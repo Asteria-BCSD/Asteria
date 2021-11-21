@@ -1,36 +1,37 @@
-#encoding=utf-8
+# encoding=utf-8
 '''
-2019年12月16日
-yangshouguo
 yangshouguo@iie.ac.cn
 '''
-import os,sys
+import os, sys
 
-sys.path.append("/root/treelstm.pytorch/ysg_treelstm")
-sys.path.append("/root/treelstm.pytorch")
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../')
+sys.path.append(ROOT)
 import logging
 import torch, numpy
 import gevent, datetime
 from math import exp
 from config import parse_args
-from ysg_treelstm.Tree import Tree
-from ysg_treelstm.model_binarytree import SimilarityBinaryTreeLSTM
+from Tree import Tree
 import time
 from sklearn.metrics.pairwise import cosine_similarity
-from ysg_treelstm.model_others import Sieamens
-from ysg_treelstm.model import get_tree_flat_nodes
-from ysg_treelstm.datahelper_mysql import DataHelper
-from ysg_treelstm.datahelper import DataHelper as old_DataHelper
+from model_others import Sieamens
+from model import get_tree_flat_nodes
+from datahelper_mysql import DataHelper
+from datahelper import DataHelper as old_DataHelper
 from tqdm import tqdm
+
 logger = logging.getLogger("application.py")
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.INFO)
 from multiprocessing import Pool, cpu_count
 import json
-#os.environ["CUDA_VISIBLE_DEVICES"] = "7"
-DB_CONNECTION = None #全局数据库连接
+
+# os.environ["CUDA_VISIBLE_DEVICES"] = "7"
+DB_CONNECTION = None  # 全局数据库连接
 datahelper = DataHelper()
 old_datahelper = old_DataHelper()
+
+
 class Application():
     '''
     这个类加载训练好的模型，对提供的ast进行计算相似度，提供以下功能：
@@ -38,7 +39,8 @@ class Application():
     2. 给定ast，计算编码
     3. 给定两个ast，计算相似度
     '''
-    def __init__(self, load_path, threshold = 0.5, cuda = False, model_name = "treelstm" , model = None):
+
+    def __init__(self, load_path, threshold=0.5, cuda=False, model_name="treelstm", model=None):
         '''
         :param load_path: 模型加载路径
         :param cuda: bool : 是否使用GPU, 对数据库中ast进行多进程编码时必须为False
@@ -46,9 +48,9 @@ class Application():
         :param threshold: 阈值,取值范围 (0~1)，建议在0.5左右
         :param model: A network variant of Tree-LSTM
         '''
-        self.args = parse_args(["--cuda"]) #TODO argparse
-        self.model =None
-        self.embmodel = None #真正用于计算编码的模型
+        self.args = parse_args(["--cuda"])  # TODO argparse
+        self.model = None
+        self.embmodel = None  # 真正用于计算编码的模型
         self.model_name = model_name
         self.db = None
         if cuda and torch.cuda.is_available():
@@ -58,8 +60,9 @@ class Application():
         if model is not None:
             self.model = model
         else:
-            if model_name=="treelstm":
-                from ysg_treelstm.model import SimilarityTreeLSTM
+            if model_name == "treelstm":
+                self.args.input_dim = 64
+                from model import SimilarityTreeLSTM
                 self.model = SimilarityTreeLSTM(
                     self.args.vocab_size,
                     self.args.input_dim,
@@ -68,25 +71,7 @@ class Application():
                     self.args.num_classes,
                     device=self.device
                 )
-            elif model_name == "treelstm_boosted":
-                from ysg_treelstm.model_mutilprocess import SimilarityTreeLSTM
-                self.model = SimilarityTreeLSTM(
-                    self.args.vocab_size,
-                    self.args.input_dim,
-                    self.args.mem_dim,
-                    self.args.hidden_dim,
-                    self.args.num_classes,
-                    device=self.device
-                )
-            elif model_name == "binarytreelstm":
-                self.model = SimilarityBinaryTreeLSTM(
-                    self.args.vocab_size,
-                    self.args.input_dim,
-                    self.args.mem_dim,
-                    self.args.hidden_dim,
-                    self.args.num_classes,
-                    device=self.device
-                )
+
             else:
                 self.model = Sieamens(
                     self.args.vocab_size,
@@ -95,7 +80,6 @@ class Application():
                     self.args.hidden_dim,
                     self.args.num_classes,
                     modelstr=self.args.model_selector)
-
 
         self.load_model(load_path, self.model)
 
@@ -110,13 +94,13 @@ class Application():
             raise Exception
         checkpoint = torch.load(path, map_location=self.device)
         if "auc" in checkpoint:
-            logger.info("checkpoint loaded: auc %f , mse: %f \n args %s" %(checkpoint['auc'], checkpoint['mse'], checkpoint['args']))
+            logger.info("checkpoint loaded: auc %f , mse: %f \n args %s" % (
+            checkpoint['auc'], checkpoint['mse'], checkpoint['args']))
         model.load_state_dict(checkpoint['model'])
         model.eval()
         # self.model.to(self.device)
-        self.embmodel =model.embmodel
+        self.embmodel = model.embmodel
         self.embmodel.to(self.device)
-
 
     def encode_ast(self, tree):
         '''
@@ -137,13 +121,13 @@ class Application():
         '''
 
         sim_tree = self.similarity_tree(ltree, rtree)
-        #return sim_tree
+        # return sim_tree
         # scale lcallee and rcallee in case that zero vector
-        lcallee=list(map(lambda x:x+1, lcallee))
-        rcallee=list(map(lambda x:x+1, rcallee))
+        lcallee = list(map(lambda x: x + 1, lcallee))
+        rcallee = list(map(lambda x: x + 1, rcallee))
 
-        cs = cosine_similarity([lcallee], [rcallee])[0][0] # （caller,callee）对之间的余弦距离
-        scale = exp(0 - abs(lcallee[-1]-rcallee[-1]))
+        cs = cosine_similarity([lcallee], [rcallee])[0][0]  # （caller,callee）对之间的余弦距离
+        scale = exp(0 - abs(lcallee[-1] - rcallee[-1]))
         return sim_tree * scale * cs
 
     def similarity_tree(self, ltree, rtree):
@@ -154,7 +138,7 @@ class Application():
         :return:
         '''
         with torch.no_grad():
-            if self.model_name=='treelstm' or self.model_name=="binarytreelstm":
+            if self.model_name == 'treelstm' or self.model_name == "binarytreelstm":
                 res = self.model(ltree, rtree)[0][1].item()
             else:
                 res = self.model(ltree, rtree)[1].item()
@@ -191,11 +175,11 @@ class Application():
         if DB_CONNECTION is None:
             global datahelper
             DB_CONNECTION = datahelper.load_database(db)
-            #DB_CONNECTION.execute('pragma journal_mode = wal')
-        
+            # DB_CONNECTION.execute('pragma journal_mode = wal')
+
         return DB_CONNECTION
 
-    def encode_ast_in_db(self, db_path, table_name="default"):
+    def encode_ast_in_db(self, db_path, table_name="default", where_suffix=""):
         '''
         对数据库中的树利用训练好的模型进行编码，得到向量，保存到新的表
         :param db_path: 数据库路径
@@ -203,7 +187,7 @@ class Application():
         '''
         db_conn = self.get_conn(db_path)
         cur = db_conn.cursor()
-        #创建表
+        # 创建表
         sql_create_new_table = """CREATE TABLE if not exists %s (
                             function_name varchar (255),
                             elf_path varchar (255),
@@ -220,24 +204,24 @@ class Application():
         to_encode_list = []
 
         global datahelper
-        for func_info, func_ast in tqdm(old_datahelper.get_functions(db_path, 1, 10), desc="Load Database: "):
+        for func_info, func_ast in tqdm(old_datahelper.get_functions(db_path, where_suffix=where_suffix),
+                                        desc="Load Database: "):
             to_encode_list.append((func_info, func_ast))
 
         encode_group = []
         count = 0
-        for to_encode_tuple in tqdm(to_encode_list, desc= "Encoding: "):
-            count+=1
+        for to_encode_tuple in tqdm(to_encode_list, desc="Encoding: "):
+            count += 1
             encode_group.append(to_encode_tuple)
         logger.info("Encoding for %d ast" % count)
         self.encode_and_update(db_path, encode_group, table_name)
-
 
     def __del__(self):
         if self.db:
             self.db.close()
 
     def func_wrapper(self, func, *args):
-        self.Timeout = 350 #8 minutes
+        self.Timeout = 350  # 8 minutes
         gevent.Timeout(self.Timeout, Exception).start()
         s = datetime.datetime.now()
         try:
@@ -245,11 +229,12 @@ class Application():
             g.join()
             return g.get()
         except Exception as e:
-            #print("Timeout Error. ")
+            # print("Timeout Error. ")
             e = datetime.datetime.now()
-            #print("Real run time is %d" % (e - s).seconds)
-            r = numpy.zeros((1,150))
+            # print("Real run time is %d" % (e - s).seconds)
+            r = numpy.zeros((1, 150))
             return r
+
     def encode_and_update(self, db_path, functions, table_name):
         '''
         对functions中的 func_ast 利用神经网络进行编码
@@ -262,9 +247,10 @@ class Application():
         res = []
         count = 1
         for func_info, func_ast in tqdm(functions, desc="Adding to pool : "):
-            res.append((p.apply_async(self.func_wrapper, (self.encode_ast, func_ast)), func_info[0], func_info[1])) # func_info[0] is function name; 1 is elf_path
-            count+=1
-        #try:
+            res.append((p.apply_async(self.func_wrapper, (self.encode_ast, func_ast)), func_info[0],
+                        func_info[1]))  # func_info[0] is function name; 1 is elf_path
+            count += 1
+        # try:
         p.close()
         p.join()
         result = []
@@ -275,127 +261,138 @@ class Application():
             logger.info("All encode fetched!")
         except Exception as e:
             print("Exception when fetching {}".format(str(e)))
-        try:
-            logger.info("Writing encoded vectors to database")
-            cur = db_conn.cursor()
-            sql_updatetable = "insert into %s (function_name, elf_path, ast_encode)"  % table_name + " values (%s,%s,%s)"
-            #for t in result:
-            rows = cur.executemany(sql_updatetable, result)
-            cur.close()
-            db_conn.commit()
-            logger.info("Total number of rows insert %d" % rows)
-        except Exception as e:
-            db_conn.rollback()
-            print("Error when INSERT\n")
-            print(e)
-        #cur.close()
+        for r in result:
+            try:
+                logger.info("Writing encoded vectors to database")
+                cur = db_conn.cursor()
+                sql_updatetable = "insert into %s (function_name, elf_path, ast_encode)" % table_name + " values (%s,%s,%s)"
+                # for t in result:
+                rows = cur.executemany(sql_updatetable, [r])
+                cur.close()
+                db_conn.commit()
+                logger.info("Total number of rows insert %d" % rows)
+            except Exception as e:
+                db_conn.rollback()
+                print("Error when INSERT\n")
+                print(e)
+        # cur.close()
+
 
 def time_consumption_statistics():
-    app = Application(load_path="/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/crossarch.pt")
+    app = Application(load_path="/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/crossarch_buildroot_all.pt",
+                      model_name="treelstm")
     dataset = torch.load("/root/treelstm.pytorch/data/cross_arch.pth")
-    AST_SIZE_GROUP = [[] for i in range(5)] # 按照不同大小对AST进行分组存储，分别对应 0~20, 20~40 ... , 80~100. 每个分组存储100个
+    AST_SIZE_GROUP = [[] for i in range(5)]  # 按照不同大小对AST进行分组存储，分别对应 0~20, 20~40 ... , 80~100. 每个分组存储100个
     ast_size = 0
     interval = 50
     GROUP_SIZE = 100
+    # group the ASTs by size
     for i in range(len(AST_SIZE_GROUP)):
-        ast_size = i*interval
+        ast_size = i * interval
         logger.info("Making size %d" % ast_size)
         for tup in dataset:
-            if tup[0][-1].size() > ast_size and tup[0][-1].size() < ast_size+interval:
+            if tup[0][-1].size() > ast_size and tup[0][-1].size() < ast_size + interval:
                 AST_SIZE_GROUP[i].append(tup[0][-1])
                 if len(AST_SIZE_GROUP[i]) >= GROUP_SIZE:
                     break
-            if tup[1][-1].size() > ast_size and tup[1][-1].size() < ast_size+interval:
+            if tup[1][-1].size() > ast_size and tup[1][-1].size() < ast_size + interval:
                 AST_SIZE_GROUP[i].append(tup[1][-1])
                 if len(AST_SIZE_GROUP[i]) >= GROUP_SIZE:
                     break
 
-    #===统计编码时间===
+    # ===统计编码时间===
     import datetime
     TIME_encode = [0 for i in range(5)]
-    TIME_encode_distribution = []
+    TIME_AST_similarity_distribution = []
     ENCODE_SIZE_GROUP = []
-    for i in tqdm(range(len(AST_SIZE_GROUP)),desc="encode time"):
+    for i in tqdm(range(len(AST_SIZE_GROUP)), desc="Sim Cal..."):
         start_time = datetime.datetime.now()
         for ast in AST_SIZE_GROUP[i]:
             s = datetime.datetime.now()
-            ENCODE_SIZE_GROUP.append(app.encode_ast(ast))
+            ENCODE_SIZE_GROUP.append(app.similarity_tree(ast, AST_SIZE_GROUP[i][0]))
             e = datetime.datetime.now()
-            TIME_encode_distribution.append((ast.size(), (e-s).total_seconds()))
+            TIME_AST_similarity_distribution.append((ast.size(), (e - s).total_seconds()))
         end_time = datetime.datetime.now()
-        TIME_encode[i] = (end_time-start_time).total_seconds()
+        TIME_encode[i] = (end_time - start_time).total_seconds()
 
     # === 统计不同量级相似度计算时间 量级 1v1, 1v50, 1v100, 1v150, 1v200, 1v250, 1v300
-    TIME_SIMILARITY = [0 for i in range(5)]
-    source = ENCODE_SIZE_GROUP[0]
-    Sim_Time_Statistic = []
-    start_time = datetime.datetime.now()
-    for i in tqdm(range(len(ENCODE_SIZE_GROUP)),desc="cal time"):
-        s = datetime.datetime.now()
-        app.similarity_vec(source, ENCODE_SIZE_GROUP[i])
-        e = datetime.datetime.now()
-        Sim_Time_Statistic.append((TIME_encode_distribution[i][0], (e-s).total_seconds()))
-    end_time = datetime.datetime.now()
-    time_sim = (end_time-start_time).total_seconds()
-    with open("time_consumption_statistics.log","a") as f:
-        f.write("#=== Time Statistics for paper\n")
-        f.write("\tTime: %s \n" %(datetime.datetime.now()))
-        f.write("Encoding Time:\n")
+    # TIME_SIMILARITY = [0 for i in range(5)]
+    # source = ENCODE_SIZE_GROUP[0]
+    # Sim_Time_Statistic = []
+    # start_time = datetime.datetime.now()
+    # for i in tqdm(range(len(ENCODE_SIZE_GROUP)),desc="cal time"):
+    #     s = datetime.datetime.now()
+    #     app.similarity_vec(source, ENCODE_SIZE_GROUP[i])
+    #     e = datetime.datetime.now()
+    #     Sim_Time_Statistic.append((TIME_AST_similarity_distribution[i][0], (e-s).total_seconds()))
+    # end_time = datetime.datetime.now()
+    # time_sim = (end_time-start_time).total_seconds()
+    with open("time_consumption_statistics.log", "a") as f:
+        f.write("#=== Time (second) Statistics for paper\n")
+        f.write("\tTime: %s \n" % (datetime.datetime.now()))
+        f.write("Similarity Calculation Times:\n")
         for i in range(len(TIME_encode)):
-            f.write("Size %d~%d: %f\n" % (i, i+interval, TIME_encode[i]/GROUP_SIZE))
-        f.write("Encode distribution : %s\n" % str(TIME_encode_distribution))
-        f.write("\tCalculation Time:\n")
-        f.write("%d calculation cost %f seconds\n" %(len(ENCODE_SIZE_GROUP), time_sim))
-        f.write("Time details : %s \n" % str(Sim_Time_Statistic))
+            f.write("Size %d~%d: %f\n" % (i, i + interval, TIME_encode[i] / GROUP_SIZE))
+        f.write("Time Details: %s\n" % str(TIME_AST_similarity_distribution))
+        # f.write("\tCalculation Time:\n")
+        # f.write("%d calculation cost %f seconds\n" %(len(ENCODE_SIZE_GROUP), time_sim))
+        # f.write("Time details : %s \n" % str(Sim_Time_Statistic))
 
 
-def test():
+def end_to_end_evaluation():
     def average_time(size_times, size_start, size_end):
-        times = list(map(lambda x:x[1], filter(lambda x:x[0] >= size_start and x[0] <= size_end, size_times)))
-        if len(times) <1:
+        times = list(map(lambda x: x[1], filter(lambda x: x[0] >= size_start and x[0] <= size_end, size_times)))
+        if len(times) < 1:
             print("Range from {} to {} no Record in function average_time.".format(size_start, size_end))
             return 0
-        return sum(times)/len(times)
+        return sum(times) / len(times)
 
-
-    app = Application(load_path =
+    app = Application(load_path=
                       "/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/crossarch_buildroot_all.pt",
                       model_name="treelstm")
-    dataset = torch.load("/root/treelstm.pytorch/data/cross_arch.pth") # 数据集
-    time_recorder = [] # (size, encoding_time)
+    dataset = torch.load("/root/treelstm.pytorch/data/cross_arch.pth")  # 数据集
+    time_recorder = []  # (size, encoding_time)
     encoding_tuple = []
+    sim_times = []
     for idx in tqdm(range(len(dataset))):
         source, target, label = dataset[idx]
         source_tree = source[-1]
         target_tree = target[-1]
-        if source_tree.size()>300 or target_tree.size() > 300:
+        if source_tree.size() > 400 or target_tree.size() > 400:
             continue
-        source_encode = app.encode_ast(source_tree)
-        target_encode = app.encode_ast(target_tree)
-        encoding_tuple.append((source_tree.size(),
-                               torch.tensor(source_encode).unsqueeze(0),
-                               torch.tensor(target_encode).unsqueeze(0)))
-    with torch.no_grad():
-        for s_size, s, t in encoding_tuple:
-            start_time = datetime.datetime.now()
-            app.model.similarity(s, t)[0][1].float().item()
-            end_time = datetime.datetime.now()
-            time_recorder.append((s_size, (end_time-start_time).microseconds))
+        start_time = datetime.datetime.now()
+        app.similarity_tree(source_tree, target_tree)
+        end_time = datetime.datetime.now()
+        sim_times.append((source_tree.size(), (end_time - start_time).total_seconds()))
 
-    with open("time_consumption_statistics.log", "a") as f:
-        f.write("Time : {} For calculations\n".format(datetime.datetime.now()))
-        ave = average_time(time_recorder, 1, 50)
-        f.write("Size range in [{} , {}] Average Encoding Time: {}\n".format(1, 50, ave))
-        ave = average_time(time_recorder, 51, 100)
-        f.write("Size range in [{} , {}] Average Encoding Time: {}\n".format(51, 100, ave))
-        ave = average_time(time_recorder, 101, 150)
-        f.write("Size range in [{} , {}] Average Encoding Time: {}\n".format(101, 150, ave))
-        ave = average_time(time_recorder, 151, 200)
-        f.write("Size range in [{} , {}] Average Encoding Time: {}\n".format(151, 200, ave))
-        ave = average_time(time_recorder, 201, 250)
-        f.write("Size range in [{} , {}] Average Encoding Time: {}\n".format(201, 250, ave))
-        ave = average_time(time_recorder, 251, 300)
-        f.write("Size range in [{} , {}] Average Encoding Time: {}\n".format(251, 300, ave))
+        # source_encode = app.encode_ast(source_tree)
+        # target_encode = app.encode_ast(target_tree)
+        # encoding_tuple.append((source_tree.size(),
+        #                        torch.tensor(source_encode).unsqueeze(0),
+        #                        torch.tensor(target_encode).unsqueeze(0)))
+    # with torch.no_grad():
+    #     for s_size, s, t in encoding_tuple:
+    #         start_time = datetime.datetime.now()
+    #         app.model.similarity(s, t)[0][1].float().item()
+    #         end_time = datetime.datetime.now()
+    #         time_recorder.append((s_size, (end_time-start_time).total_seconds()))
+
+    with open("time_consumption_statistics.log", "w") as f:
+        f.write("Time : {} \nFor End-to-End calculations\n".format(datetime.datetime.now()))
+        ave = average_time(sim_times, 1, 50)
+        f.write("Size range in [{} , {}] Average Time (seconds): {}\n".format(1, 50, ave))
+        ave = average_time(sim_times, 51, 100)
+        f.write("Size range in [{} , {}] Average Time (seconds): {}\n".format(51, 100, ave))
+        ave = average_time(sim_times, 101, 150)
+        f.write("Size range in [{} , {}] Average Time (seconds): {}\n".format(101, 150, ave))
+        ave = average_time(sim_times, 151, 200)
+        f.write("Size range in [{} , {}] Average Time (seconds): {}\n".format(151, 200, ave))
+        ave = average_time(sim_times, 201, 250)
+        f.write("Size range in [{} , {}] Average Time (seconds): {}\n".format(201, 250, ave))
+        ave = average_time(sim_times, 251, 300)
+        f.write("Size range in [{} , {}] Average Time (seconds): {}\n".format(251, 300, ave))
+        ave = average_time(sim_times, 300, 400)
+        f.write("Size range in [{} , {}] Average Time (seconds): {}\n".format(301, 400, ave))
         f.write("{}\n".format(str(time_recorder)))
 
 
@@ -404,21 +401,23 @@ def generate_openssl_ast_encode():
     生成openssl数据集的ast的编码
     :return:
     '''
-    db_names = ["ARM.sqlite",  "PPC.sqlite",  "X64.sqlite",  "X86.sqlite"]
+    db_names = ["ARM.sqlite", "PPC.sqlite", "X64.sqlite", "X86.sqlite"]
     db_path = "/sqlite"
     app = Application(load_path="/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/crossarch.pt", )
     for name in db_names:
         p = os.path.join(db_path, name)
         app.encode_ast_in_db(p)
 
+
 if __name__ == '__main__':
-    test()
+    # end_to_end_evaluation()
     # time_consumption_statistics()
     # generate_openssl_ast_encode()
     # db_names = [""]
-    """db_path = "/root/data/firmwares/Netgearfirmwares.sqlite"
-    app = Application(load_path="/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/crossarch.pt", )
-    app.encode_ast_in_db(db_path, table_name="NormalTreeLSTM")"""
-    #app.encode_ast_in_db("/root/data/firmwares/vul.sqlite")
+    # app.encode_ast_in_db("/root/data/firmwares/vul.sqlite")
     # app.encode_ast_in_db("/root/data/firmwares/Dlinkfirmwares.sqlite")
-
+    app = Application(load_path=
+                      "/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/crossarch_buildroot_all.pt",
+                      model_name="treelstm")
+    db_path = "/root/data/firmwares/Netgearfirmwares.sqlite"
+    app.encode_ast_in_db(db_path, table_name='NormalTreeLSTM', where_suffix=" where elf_file_name like 'libcrypto%' ")

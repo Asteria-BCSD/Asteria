@@ -115,7 +115,7 @@ class FLATLSTM(nn.Module):#对树进行先序遍历，生成一个序列，然�
         return out
 
 class Sieamens(nn.Module):
-    #计算两个tree的相似度
+    # compute similarity between two ast encodes
     def __init__(self, vocab_size, input_dim, mem_dim, hidden_dim, num_classes, modelstr = "flatlstm"):
         '''
         vocab_size,
