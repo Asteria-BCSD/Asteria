@@ -5,8 +5,8 @@ def parse_args(iargs = []):
     parser = argparse.ArgumentParser(
         description='PyTorch TreeLSTM for Sentence Similarity on Dependency Trees')
     # data arguments
-    parser.add_argument('--data', default='data/sick/',
-                        help='path to dataset')
+    # parser.add_argument('--data', default='data/sick/',
+    #                     help='path to dataset')
     parser.add_argument('--save', default='checkpoints/',
                         help='directory to save checkpoints in')
     parser.add_argument('--model_selector', default='flatlstm', choices=["flatlstm", "splitedtracelstm", "treelstm"],
@@ -22,8 +22,8 @@ def parse_args(iargs = []):
                         help='Size of classifier MLP')
     parser.add_argument('--num_classes', default=2, type=int,
                         help='Number of classes in dataset')
-    parser.add_argument('--freeze_embed', action='store_true',
-                        help='Freeze word embeddings')
+    # parser.add_argument('--freeze_embed', action='store_true',
+    #                     help='Freeze word embeddings')
     # training arguments
     parser.add_argument('--epochs', default=60, type=int,
                         help='number of total epochs to run')

@@ -24,11 +24,7 @@ l.addHandler(logging.FileHandler(os.path.join(logpath, "datahelper.log")))
 l.addHandler(logging.StreamHandler())
 l.setLevel(logging.INFO)
 '''
-功能：
-1. 加载多个数据库，进行数据查询
-2. 将查询得到的数据中AST进行恢复
-3. 将多个数据库中数据根据文件名和函数名进行组对；文件名和函数名相同，架构或endian或位数或编译优化不同，则为positive，否则，只要文件名以及函数名不同则negative
-4. 数据库schema
+Functions: 1. Load multiple databases and perform data query 2. Restore the data obtained from the query in AST 3. Group the data in multiple databases according to the file name and function name; the file name and function name are the same, the structure or endian or If the number of bits or compilation optimization is different, it is positive, otherwise, as long as the file name and function name are different, it is negative4. Database schema
     sql = """create table if not exists function (
                     id integer primary key,
                     function_name varchar(255),
@@ -78,13 +74,7 @@ class DataHelper:
 
     def get_functions(self, db_path, start=-1, end=-1, where_suffix=None):
         '''
-        :param db_path:
-        :param start: 开始查询的偏移量
-        :param end: 结束查询的偏移量
-        :param where_suffix: 限制查询的where子句
-        :return: A generator : 第一个元素是 函数的一些信息，
-        (函数名，elf路径名，elf文件名，调用函数数量，被调用函数数量，ast编码向量
-        ) 第二个是函数的ast
+
         '''
         db = self.load_database(db_path)
         suffix = ""
@@ -106,8 +96,7 @@ class DataHelper:
 
     def get_function_ast_encode(self, db_path, table_name = 'normaltreelstm', where_suffix = ""):
         '''
-        :param db_path: sqlite 数据库路径
-        :return: 函数名，elf文件路径，ast编码向量（需要使用 json.loads 恢复成list）
+
         '''
         db = self.load_database(db_path)
         sql = """select function_name, elf_path, ast_encode from %s  %s """ % (table_name, where_suffix)
@@ -121,8 +110,7 @@ class DataHelper:
 
     def make_target_set(self, db_list = [], rate=2):
         '''
-        :param db_list: list: 数据库文件列表
-        :param rate: 非同源函数对数量与同源函数对数量的比例
+
         :return: list: {A:[target functions list]}
         '''
         pool = Pool(len(db_list)-1)
@@ -146,20 +134,15 @@ class DataHelper:
 
     def recvore_ast_tree(self, data, idx):
         '''
-        :param data: data[idx]是使用 pick.dumps 保存的字符串
-        :return: 将data[idx]使用pick.loads 加载的Tree对象
+
         '''
         for d in data:
             d[idx] = self.loads_ast_tree(d[idx])
-        return list(filter(lambda d:d[idx].size()>3, data))# 过滤AST大小小于3的AST
+        return list(filter(lambda d:d[idx].size()>3, data))#
 
     def _make_cross_architecture_paires(self, arch1_db, arch2_db, non_homologous_pair_rate = 2, limit=""):
         '''
-        给定两个数据库文件，读取其中函数，提取共同函数，根据共同函数构建同源函数对和非同源函数对.
-        :param arch1_db: 架构1 数据库文件路径
-        :param arch2_db: 架构2 数据库文件路径
-        :param non_homologous_pair_rate: int; 非同源函数对数与同源函数对的比例
-        :return:同源函数对数组 和 非同源函数对数组
+
         '''
         def random_choose_N(list, N):
             ln = len(list)
@@ -169,7 +152,6 @@ class DataHelper:
 
 
         def get_componet_and_binary_name(path):
-            # 返回组件名和二进制文件名
             id1 = path.rfind("/")
             id2 = path.rfind("/", 0, id1 - 1)
             return path[id2 + 1:]
@@ -182,7 +164,7 @@ class DataHelper:
         arch1_data = self.recvore_ast_tree(arch1_data, idx=-1)
         arch2_data = self.recvore_ast_tree(arch2_data, idx=-1)
         arch2_len = len(list(arch2_data))
-        same_source_function = defaultdict(list) #第一个值表示该函数在arch1_data中的下标，第二个值表示该函数在arch2_data中下标;长度小于2，表示该函数不存在同源函数对 key:function_name+elf_file_name
+        same_source_function = defaultdict(list) # key:function_name+elf_file_name
         for idx, line in enumerate(arch1_data):
             key = "+".join([line[0], get_componet_and_binary_name(line[2])]) # function_name + binary_name
             same_source_function[key].append(idx)
@@ -217,7 +199,7 @@ class DataHelper:
         np = deepcopy(nonhomologous_pair)
         del  homologous_pair, nonhomologous_pair
         return hp, np
-# ============== ast 哈希 encode ======================
+# ============== ast  encode ======================
     def hashencode_ast(self, ast):
         mu = hashlib.md5()
         mu.update(str(ast.op).encode("utf-8"))
@@ -225,18 +207,17 @@ class DataHelper:
             self.hashencode_ast(child)
             mu.update(child.hash_op.encode("utf-8"))
         ast.hash_op = mu.hexdigest()
-    def visit_tree(self, ast, node_list):  # 先序遍历
+    def visit_tree(self, ast, node_list):  # preorder
         node_list.append(ast.hash_op)
         for child in ast.children:
             self.visit_tree(child, node_list)
-    def get_hash_code(self, ast):  # 对树进行哈希编码，返回编码之后的向量
+    def get_hash_code(self, ast):  #
         self.hashencode_ast(ast)
         res = []
         self.visit_tree(ast, res)
         return res
     def similarity_ast_has_encode(self, hash_encode1, hash_encode2):
         '''
-        计算两个哈希之后树生成的向量的相似度
         :param hash_encode1:
         :param hash_encode2:
         :return:
@@ -246,14 +227,14 @@ class DataHelper:
 
     def generate_ast_hash_encode(self, db):
         '''
-        生成数据库的哈希更新code
+
         :param db:
         :return:
         '''
-        #首先对数据库插入一列属性  ast_hash_encode
+        #  ast_hash_encode
         db_conn = self.load_database(db)
         cur = db_conn.cursor()
-        # 修改表结构，添加一列
+        # ，
         sql_add_column = """alter table function add column ast_hash_encode TEXT"""
         try:
             cur.execute(sql_add_column)
@@ -293,8 +274,8 @@ class DataHelper:
             yield t
         cur.close()
         db_conn.close()
-# ============== ast 哈希 encode ====================== end
-    def get_cross_archtecture_pair(self, *archs, limit=""): #生成跨架构数据集
+# ============== ast  encode ====================== end
+    def get_cross_archtecture_pair(self, *archs, limit=""): #
         pairs = []
         arch_record = set()
         for arch1 in archs:
@@ -345,7 +326,7 @@ def mk_ast_hash_encode_dataset():
                 i = 0
                 count = 3
                 while i < len(sims) and count>0:
-                    if t_functions[sims[i][1]][0] != s_functions[0]: #非同名函数
+                    if t_functions[sims[i][1]][0] != s_functions[0]: #
                         all_function_pairs.append((s_func[2], t_functions[sims[i][1]][2], -1))
                         count-=1
                     i+=1

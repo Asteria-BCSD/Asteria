@@ -51,7 +51,6 @@ The ELFPath denotes the path of binary where candidate function come from.
 Since the buildroot dataset we used is too large(28G), we construct a demo training dataset for demonstrating.
 
 `python train.py`
-After 60 epochs training, the model with best performance is saved in "checkpoints/crossarch.pt".
 
-The trained model parameters and settings in our work are placed in "data/saved_model.pt"
+We have the trained model in "data/saved_model.pt".
 

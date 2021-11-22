@@ -195,7 +195,7 @@ class Visitor(idaapi.ctree_visitor_t):
             AST.op = ccase.op
             l.info('case opname %s, op %d' % (ccase.opname, ccase.op))
             value = 0 #default
-            size = ccase.size() #List of case values. if empty, then 'default' case , 此处只取第一个值, 该对象属性值 ： 'acquire', 'append', 'disown', 'next', 'own
+            size = ccase.size() #List of case values. if empty, then 'default' case , ： 'acquire', 'append', 'disown', 'next', 'own
             if size > 0:
                 value = ccase.value(0)
             AST.value = value
@@ -211,7 +211,6 @@ class Visitor(idaapi.ctree_visitor_t):
         '''
         # l.info "dumping expression %x" % (cexpr.ea)
 
-        #操作数
         oprand =[] # a list of Tree()
         l.info("[expr] op %s" % cexpr.opname)
 
@@ -257,7 +256,6 @@ class Visitor(idaapi.ctree_visitor_t):
 
         elif cexpr.op == idaapi.cot_var:
 
-            # 指针引用：数组，结构体等
             var = cexpr.v
             entry_ea = var.mba.entry_ea
             idx = var.idx

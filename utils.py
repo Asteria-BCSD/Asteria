@@ -84,7 +84,7 @@ class Trainer(object):
                 target = target.to(self.device)
                 output = self.model(ltree, rtree)
                 output = output.view(1, -1)
-                # 保证计算loss的维度必须一致
+                # Ensure that the dimensions of the calculation loss must be consistent
                 assert output.size() == target.size()
                 loss = self.criterion(output, target)
                 total_loss += loss.item()

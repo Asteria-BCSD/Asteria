@@ -633,3 +633,389 @@
 
 	|Sim:0.005	|Func:.divsi3_skip_div0_test	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.3.32_1.1.21.zip.extracted/_R8000-V1.0.3.32_1.1.21.chk.extracted/squashfs-root/usr/lib/libssl.so.0.9.8
 
+******Time: 2021-11-21 04:44:44.001727 ******
+******Args: Namespace(checkpoint='/root/paper_code/ALB/application/.././data/crossarch.pt', model_selector='treelstm', result='search.txt', source_db='/root/paper_code/ALB/ASTExtraction/vul_database/openssl_vul.sqlite', target_db='/root/data/firmwares/Netgearfirmwares.sqlite', threshold='0.001', use_ast=True) ******
+[VULFUNC]:    EVP_EncodeUpdate	VULELF:      openssl-1.0.1s
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7000-V1.0.0.32_1.0.1.zip.extracted/_D7000-V1.0.0.32_1.0.1.img.extracted/_D7000.bin.extracted/jffs2-root/fs_2/lib/libcrypto.so.1.0.0
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_FVS318Gv2_v4.3.3-6.zip.extracted/_FVS318Gv2_v4.3.3-6.img.extracted/squashfs-root/lib/libcrypto.so.0.9.8
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6250-V1.0.3.6_10.1.3.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6250-V1.0.3.6_10.1.3.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6250-V1.0.3.6_10.1.3.zip.extracted/_R6250-V1.0.3.6_10.1.3.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6250-V1.0.3.6_10.1.3.zip.extracted/_R6250-V1.0.3.6_10.1.3.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6700-V1.0.1.20_10.0.32.zip.extracted/_R6700-V1.0.1.20_10.0.32.chk.extracted/squashfs-root/lib/libcrypto.so.1.0.0
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.2.200_1.0.18PRRU.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.2.200_1.0.18PRRU.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.3.56_1.1.25.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.3.56_1.1.25.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.3.60_1.1.27.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.3.60_1.1.27.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000_V1.0.1.22-1.0.15.zip.extracted/_R7000-V1.0.1.22_1.0.15.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000_V1.0.1.22-1.0.15.zip.extracted/_R7000-V1.0.1.22_1.0.15.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7900-V1.0.0.2_10.0.1.zip.extracted/_R7900-V1.0.0.2_10.0.1.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7900-V1.0.0.2_10.0.1.zip.extracted/_R7900-V1.0.0.2_10.0.1.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.0.110_1.0.70.zip.extracted/_R8000-V1.0.0.110_1.0.70.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.0.110_1.0.70.zip.extracted/_R8000-V1.0.0.110_1.0.70.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.1.16_1.0.74.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.1.16_1.0.74.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.2.44_1.0.96.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.2.44_1.0.96.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.3.32_1.1.21.zip.extracted/_R8000-V1.0.3.32_1.1.21.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.3.32_1.1.21.zip.extracted/_R8000-V1.0.3.32_1.1.21.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.006	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/bin/busybox
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/bin/cgi-fcgi
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/lib/libcrypto++.so.8.0.0
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/lib/libcurl.so.4.3.0
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/lib/libdbus-1.so.3.5.7
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/lib/libfcgi.so.0.0.0
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/lib/libssl.so.0.9.8
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/sbin/net-cgi
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/sbin/wget
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/www/cgi-bin/proccgi
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_V1.0.0.38_FW.zip.extracted/_D7800-V1.0.0.38.img.extracted/squashfs-root/bin/busybox
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/bin/busybox
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/usr/bin/cgi-fcgi
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/usr/lib/libcurl.so.4.3.0
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/usr/lib/libdbus-1.so.3.5.7
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/usr/lib/libfcgi.so.0.0.0
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/usr/lib/libssl.so.0.9.8
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/usr/sbin/net-cgi
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/bin/busybox
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/usr/bin/cgi-fcgi
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/usr/lib/libcurl.so.4.3.0
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/usr/lib/libdbus-1.so.3.5.7
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/usr/lib/libfcgi.so.0.0.0
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/usr/lib/libssl.so.0.9.8
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/usr/sbin/net-cgi
+
+	|Sim:0.003	|Func:          .init_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/www/cgi-bin/proccgi
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/bin/busybox
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/bin/cgi-fcgi
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/lib/libcrypto++.so.8.0.0
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/lib/libcurl.so.4.3.0
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/lib/libdbus-1.so.3.5.7
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/lib/libfcgi.so.0.0.0
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/lib/libssl.so.0.9.8
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/sbin/net-cgi
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/sbin/wget
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/www/cgi-bin/proccgi
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_V1.0.0.38_FW.zip.extracted/_D7800-V1.0.0.38.img.extracted/squashfs-root/bin/busybox
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/bin/busybox
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/usr/bin/cgi-fcgi
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/usr/lib/libcurl.so.4.3.0
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/usr/lib/libdbus-1.so.3.5.7
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/usr/lib/libfcgi.so.0.0.0
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/usr/lib/libssl.so.0.9.8
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/usr/sbin/net-cgi
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/bin/busybox
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/usr/bin/cgi-fcgi
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/usr/lib/libcurl.so.4.3.0
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/usr/lib/libdbus-1.so.3.5.7
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/usr/lib/libfcgi.so.0.0.0
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/usr/lib/libssl.so.0.9.8
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/usr/sbin/net-cgi
+
+	|Sim:0.003	|Func:          .term_proc	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/www/cgi-bin/proccgi
+
+	|Sim:0.002	|Func:ACCESS_DESCRIPTION_free	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.002	|Func:ACCESS_DESCRIPTION_free	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.002	|Func:ACCESS_DESCRIPTION_free	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.002	|Func:ACCESS_DESCRIPTION_free	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6250-V1.0.3.6_10.1.3.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.002	|Func:ACCESS_DESCRIPTION_free	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6250-V1.0.3.6_10.1.3.zip.extracted/_R6250-V1.0.3.6_10.1.3.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.002	|Func:ACCESS_DESCRIPTION_free	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.2.200_1.0.18PRRU.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.002	|Func:ACCESS_DESCRIPTION_free	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.3.56_1.1.25.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.002	|Func:ACCESS_DESCRIPTION_free	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.3.60_1.1.27.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.002	|Func:ACCESS_DESCRIPTION_free	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000_V1.0.1.22-1.0.15.zip.extracted/_R7000-V1.0.1.22_1.0.15.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.002	|Func:ACCESS_DESCRIPTION_free	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7900-V1.0.0.2_10.0.1.zip.extracted/_R7900-V1.0.0.2_10.0.1.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.002	|Func:ACCESS_DESCRIPTION_free	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.0.110_1.0.70.zip.extracted/_R8000-V1.0.0.110_1.0.70.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.002	|Func:ACCESS_DESCRIPTION_free	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.1.16_1.0.74.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.002	|Func:ACCESS_DESCRIPTION_free	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.2.44_1.0.96.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.002	|Func:ACCESS_DESCRIPTION_free	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.3.32_1.1.21.zip.extracted/_R8000-V1.0.3.32_1.1.21.chk.extracted/squashfs-root/lib/libcrypto.so
+
+******Time: 2021-11-21 04:55:37.362813 ******
+******Args: Namespace(checkpoint='/root/paper_code/ALB/application/.././data/saved_model.pt', model_selector='treelstm', result='search.txt', source_db='/root/paper_code/ALB/ASTExtraction/vul_database/openssl_vul.sqlite', target_db='/root/data/firmwares/Netgearfirmwares.sqlite', threshold='0.001', use_ast=True) ******
+[VULFUNC]:    EVP_EncodeUpdate	VULELF:      openssl-1.0.1s
+	|Sim:0.013	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.013	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.013	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7000-V1.0.0.32_1.0.1.zip.extracted/_D7000-V1.0.0.32_1.0.1.img.extracted/_D7000.bin.extracted/jffs2-root/fs_2/lib/libcrypto.so.1.0.0
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_FVS318Gv2_v4.3.3-6.zip.extracted/_FVS318Gv2_v4.3.3-6.img.extracted/squashfs-root/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6250-V1.0.3.6_10.1.3.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6250-V1.0.3.6_10.1.3.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6250-V1.0.3.6_10.1.3.zip.extracted/_R6250-V1.0.3.6_10.1.3.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6250-V1.0.3.6_10.1.3.zip.extracted/_R6250-V1.0.3.6_10.1.3.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6700-V1.0.1.20_10.0.32.zip.extracted/_R6700-V1.0.1.20_10.0.32.chk.extracted/squashfs-root/lib/libcrypto.so.1.0.0
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.2.200_1.0.18PRRU.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.2.200_1.0.18PRRU.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.3.56_1.1.25.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.3.56_1.1.25.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.3.60_1.1.27.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.3.60_1.1.27.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000_V1.0.1.22-1.0.15.zip.extracted/_R7000-V1.0.1.22_1.0.15.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000_V1.0.1.22-1.0.15.zip.extracted/_R7000-V1.0.1.22_1.0.15.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7900-V1.0.0.2_10.0.1.zip.extracted/_R7900-V1.0.0.2_10.0.1.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7900-V1.0.0.2_10.0.1.zip.extracted/_R7900-V1.0.0.2_10.0.1.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.0.110_1.0.70.zip.extracted/_R8000-V1.0.0.110_1.0.70.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.0.110_1.0.70.zip.extracted/_R8000-V1.0.0.110_1.0.70.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.1.16_1.0.74.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.1.16_1.0.74.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.2.44_1.0.96.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.2.44_1.0.96.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.3.32_1.1.21.zip.extracted/_R8000-V1.0.3.32_1.1.21.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.3.32_1.1.21.zip.extracted/_R8000-V1.0.3.32_1.1.21.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.001	|Func:ACCESS_DESCRIPTION_free	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6700-V1.0.1.20_10.0.32.zip.extracted/_R6700-V1.0.1.20_10.0.32.chk.extracted/squashfs-root/lib/libcrypto.so.1.0.0
+
+******Time: 2021-11-21 05:34:35.979907 ******
+******Args: Namespace(checkpoint='/root/paper_code/ALB/application/.././data/saved_model.pt', model_selector='treelstm', result='search.txt', source_db='/root/paper_code/ALB/ASTExtraction/vul_database/openssl_vul.sqlite', target_db='/root/data/firmwares/Netgearfirmwares.sqlite', threshold='0.001', use_ast=True) ******
+[VULFUNC]:    EVP_EncodeUpdate	VULELF:      openssl-1.0.1s
+	|Sim:0.013	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.013	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.013	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7000-V1.0.0.32_1.0.1.zip.extracted/_D7000-V1.0.0.32_1.0.1.img.extracted/_D7000.bin.extracted/jffs2-root/fs_2/lib/libcrypto.so.1.0.0
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_FVS318Gv2_v4.3.3-6.zip.extracted/_FVS318Gv2_v4.3.3-6.img.extracted/squashfs-root/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6250-V1.0.3.6_10.1.3.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6250-V1.0.3.6_10.1.3.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6250-V1.0.3.6_10.1.3.zip.extracted/_R6250-V1.0.3.6_10.1.3.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6250-V1.0.3.6_10.1.3.zip.extracted/_R6250-V1.0.3.6_10.1.3.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6700-V1.0.1.20_10.0.32.zip.extracted/_R6700-V1.0.1.20_10.0.32.chk.extracted/squashfs-root/lib/libcrypto.so.1.0.0
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.2.200_1.0.18PRRU.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.2.200_1.0.18PRRU.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.3.56_1.1.25.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.3.56_1.1.25.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.3.60_1.1.27.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.3.60_1.1.27.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000_V1.0.1.22-1.0.15.zip.extracted/_R7000-V1.0.1.22_1.0.15.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000_V1.0.1.22-1.0.15.zip.extracted/_R7000-V1.0.1.22_1.0.15.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7900-V1.0.0.2_10.0.1.zip.extracted/_R7900-V1.0.0.2_10.0.1.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7900-V1.0.0.2_10.0.1.zip.extracted/_R7900-V1.0.0.2_10.0.1.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.0.110_1.0.70.zip.extracted/_R8000-V1.0.0.110_1.0.70.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.0.110_1.0.70.zip.extracted/_R8000-V1.0.0.110_1.0.70.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.1.16_1.0.74.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.1.16_1.0.74.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.2.44_1.0.96.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.2.44_1.0.96.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.3.32_1.1.21.zip.extracted/_R8000-V1.0.3.32_1.1.21.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.3.32_1.1.21.zip.extracted/_R8000-V1.0.3.32_1.1.21.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.001	|Func:ACCESS_DESCRIPTION_free	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6700-V1.0.1.20_10.0.32.zip.extracted/_R6700-V1.0.1.20_10.0.32.chk.extracted/squashfs-root/lib/libcrypto.so.1.0.0
+
+******Time: 2021-11-21 05:35:45.472575 ******
+******Args: Namespace(checkpoint='/root/paper_code/ALB/application/.././data/saved_model.pt', model_selector='treelstm', result='search.txt', source_db='/root/paper_code/ALB/ASTExtraction/vul_database/openssl_vul.sqlite', target_db='/root/data/firmwares/Netgearfirmwares.sqlite', threshold='0.001', use_ast=True) ******
+[VULFUNC]:    EVP_EncodeUpdate	VULELF:      openssl-1.0.1s
+	|Sim:0.013	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7800_FW_V1.0.1.16.zip.extracted/_D7800-V1.0.1.16.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.013	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7500-V1.0.0.68.zip.extracted/_R7500-V1.0.0.68.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.013	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7800-V1.0.0.40.zip.extracted/_R7800-V1.0.0.40.img.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_D7000-V1.0.0.32_1.0.1.zip.extracted/_D7000-V1.0.0.32_1.0.1.img.extracted/_D7000.bin.extracted/jffs2-root/fs_2/lib/libcrypto.so.1.0.0
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_FVS318Gv2_v4.3.3-6.zip.extracted/_FVS318Gv2_v4.3.3-6.img.extracted/squashfs-root/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6250-V1.0.3.6_10.1.3.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6250-V1.0.3.6_10.1.3.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6250-V1.0.3.6_10.1.3.zip.extracted/_R6250-V1.0.3.6_10.1.3.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6250-V1.0.3.6_10.1.3.zip.extracted/_R6250-V1.0.3.6_10.1.3.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6700-V1.0.1.20_10.0.32.zip.extracted/_R6700-V1.0.1.20_10.0.32.chk.extracted/squashfs-root/lib/libcrypto.so.1.0.0
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.2.200_1.0.18PRRU.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.2.200_1.0.18PRRU.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.3.56_1.1.25.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.3.56_1.1.25.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.3.60_1.1.27.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000-V1.0.3.60_1.1.27.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000_V1.0.1.22-1.0.15.zip.extracted/_R7000-V1.0.1.22_1.0.15.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7000_V1.0.1.22-1.0.15.zip.extracted/_R7000-V1.0.1.22_1.0.15.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7900-V1.0.0.2_10.0.1.zip.extracted/_R7900-V1.0.0.2_10.0.1.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R7900-V1.0.0.2_10.0.1.zip.extracted/_R7900-V1.0.0.2_10.0.1.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.0.110_1.0.70.zip.extracted/_R8000-V1.0.0.110_1.0.70.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.0.110_1.0.70.zip.extracted/_R8000-V1.0.0.110_1.0.70.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.1.16_1.0.74.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.1.16_1.0.74.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.2.44_1.0.96.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.2.44_1.0.96.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.3.32_1.1.21.zip.extracted/_R8000-V1.0.3.32_1.1.21.chk.extracted/squashfs-root/lib/libcrypto.so
+
+	|Sim:0.007	|Func:ACCESS_DESCRIPTION_new	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R8000-V1.0.3.32_1.1.21.zip.extracted/_R8000-V1.0.3.32_1.1.21.chk.extracted/squashfs-root/usr/lib/libcrypto.so.0.9.8
+
+	|Sim:0.001	|Func:ACCESS_DESCRIPTION_free	|ELFPath:/home/ubuntu/disk/hdd_2/iie/acfg/firmwareExtracted/NetGear/_R6700-V1.0.1.20_10.0.32.zip.extracted/_R6700-V1.0.1.20_10.0.32.chk.extracted/squashfs-root/lib/libcrypto.so.1.0.0
+

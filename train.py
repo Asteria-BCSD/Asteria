@@ -1,5 +1,5 @@
 import os, sys
-
+import ysg_treelstm
 root = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(root)
 from datahelper import DataHelper

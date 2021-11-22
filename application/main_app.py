@@ -106,7 +106,7 @@ class Asteria():
         '''
         :param source_db: aught to be vulnerability database path
         :param target_db: firmware function database
-        :param ast: True：直接使用ast进行计算相似度；False，使用ast的编码之后的向量进行相似度计算
+        :param ast: True: directly use ast to calculate similarity; False, use ast's encoded vector for similarity calculation
         :param threshold: float: 0~1
         :param start/end: the position for select in sql limit
         :return:
@@ -166,7 +166,7 @@ def parse_args():
     ap.add_argument("--threshold", type=str, default="0.9",
                     help="The similarity threshold to filter candidate functions(default 0.9)")
     ap.add_argument("--checkpoint", type=str,
-                    default="/root/treelstm.pytorch/ysg_treelstm/checkpoints/backup/train_after_hash_calculated.pt",
+                    default=os.path.join(ROOT, "./data/saved_model.pt"),
                     help="pytorch model checkpoint path")
     ap.add_argument("--model_selector", type=str, default="treelstm", choices=['treelstm','binarytreelstm','lstm'])
     ap.add_argument("--result", type=str, default="", help="file path to save search results")

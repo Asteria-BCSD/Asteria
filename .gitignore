@@ -1,6 +1,10 @@
+*.txt
+*.result
+*.idb
 *.log
 *.pyc
 .idea
 __pycache__
 application/__pycache__
+diaphora_test
 *.pdf
