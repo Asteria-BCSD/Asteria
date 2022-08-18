@@ -8,3 +8,4 @@ __pycache__
 application/__pycache__
 diaphora_test
 *.pdf
+.vscode

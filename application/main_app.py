@@ -53,9 +53,9 @@ class Asteria():
         result = {}
         for function_name,elf_path,ast_encode in tqdm(sources):
             res = []
-            pool = Pool(processes=cpu_count()-2)
+            pool = Pool(processes=max(cpu_count()-2, 1))
             ast_encode = json.loads(ast_encode)
-            for tfunction_name,telf_path,tast_encode in tqdm(targets, desc="func %s" % function_name):
+            for tfunction_name,telf_path,tast_encode in tqdm(targets, desc="Detection for %s" % function_name):
                 if tast_encode is None:
                     print("%s encode not exits" % tfunction_name)
                 # res.append((pool.apply_async(self.compute_app.similarity_vec, (json.loads(ast_encode), json.loads(tast_encode))),
@@ -66,12 +66,15 @@ class Asteria():
             # pool.join()
             similarity_list = []
             for r in res:
-                sim = r[0].get()
-                similarity_list.append((sim, r[1], r[2]))
+                sim = r[0]
+                if sim > threshold:
+                    similarity_list.append((sim, r[1], r[2]))
+            similarity_list = list(set(similarity_list))
             similarity_list.sort(key=lambda x: x[0], reverse=True) #
             result[function_name+"+"+elf_path] = similarity_list
         return result
 
+    @DeprecationWarning 
     def ast_similarity(self, sources = [], targets = [], astfilter = None, threshold = 0):
         '''
         :param sources: source  ast
@@ -115,46 +118,33 @@ class Asteria():
         target_asts = []
         elf_names = set()
         where_suffix = ""
-        #where_suffix = " where function_name like 'EVP_EncodeUpdate' " # TODO delete this line;
-        if ast:
-            for func in list(self.dh.get_functions(source_db, where_suffix=where_suffix)):
-                # limit vul function number
-                source_asts.append(func)
-                elf_names.add("'"+func[0][2].split('.')[0]+"%'")
+        
+        # load ast encode first. if not exist, then load ast and encode.
+        try:
+            asts = list(self.dh.get_function_ast_encode(source_db))
+        except sqlite3.OperationalError as e:
+            asts = list(self.dh.get_functions(source_db, where_suffix=where_suffix))
+            newasts = []
+            for s_info, s_ast in asts:
+                newasts.append((s_info[0], s_info[1], json.dumps(self.compute_app.encode_ast(s_ast).tolist())))
+            asts = newasts
+        try:
+            # elf_files = "libcrypto%"
+            # where_suffix = " where elf_path like '%%%s%%'" % elf_files
+            where_suffix = "" # to filter target functions
+            target_asts = list(self.dh.get_function_ast_encode(target_db, where_suffix=where_suffix))
+        except sqlite3.OperationalError as e:
+            print("Using online ast encoding, will be very slow. Please encode offline.")
+            target_asts = list(self.dh.get_functions(target_db, where_suffix=where_suffix))
+            newasts = []
+            for s_info, s_ast in target_asts:
+                newasts.append((s_info[0], s_info[1], json.dumps(self.compute_app.encode_ast(s_ast).tolist())))
+            target_asts = newasts
+            print("Please use encode_ast_in_db() in application to generate the encodings first")
+            
 
-            elf_files = "libcrypto%"
-            where_suffix = " where function_name is '{0}'  union " \
-                           "select function_name, elf_path, elf_file_name, caller, callee, ast_encode, ast_pick_dump from function " \
-                           "where function_name is not '{0}' limit 200".format(
-                'EVP_EncodeUpdate'
-            )
-            #l.info("[DB] the firmware select filter is %s" % where_suffix)
-            print('Loading target functions...')
-            for func in self.dh.get_functions(target_db, start=start, end=end, where_suffix=where_suffix):
-                target_asts.append(func)
-            return self.ast_similarity(source_asts[:1], target_asts, threshold=threshold)
+        return self.ast_encode_similarity(asts, target_asts, threshold=threshold)
 
-        else:
-
-            try:
-                asts = list(self.dh.get_function_ast_encode(source_db))
-            except sqlite3.OperationalError as e:
-                asts = list(self.dh.get_functions(source_db, where_suffix=where_suffix))
-                newasts = []
-                for s_info, s_ast in asts:
-                    newasts.append((s_info[0], s_info[1], json.dumps(self.compute_app.encode_ast(s_ast).tolist())))
-                asts = newasts
-            try:
-                elf_files = "libcrypto%"
-                where_suffix = " where elf_path like '%%%s%%'" % elf_files
-                target_asts = list(self.dh.get_function_ast_encode(target_db, where_suffix=where_suffix))
-            except sqlite3.OperationalError as e:
-                print(e)
-                print("Please use encode_ast_in_db() in application to generate the encodings first")
-
-            return self.ast_encode_similarity(asts, target_asts, threshold=threshold)
-
-import distutils
 def parse_args():
     ap = ArgumentParser()
     ap.add_argument("source_db", type=str,
@@ -166,24 +156,29 @@ def parse_args():
     ap.add_argument("--threshold", type=str, default="0.9",
                     help="The similarity threshold to filter candidate functions(default 0.9)")
     ap.add_argument("--checkpoint", type=str,
-                    default=os.path.join(ROOT, "./data/saved_model.pt"),
+                    default=os.path.join(ROOT, "./data/crossarch_train_100000_1659022264.018625.pt"),
                     help="pytorch model checkpoint path")
     ap.add_argument("--model_selector", type=str, default="treelstm", choices=['treelstm','binarytreelstm','lstm'])
     ap.add_argument("--result", type=str, default="", help="file path to save search results")
     return ap.parse_args()
+
 def log_result(args, result):
     result_file = ""
     if len(args.result)>0:
         result_file = args.result
     else:
         result_file = "%s_%s.result" % (os.path.basename(args.source_db), os.path.basename(args.target_db))
-    with open(result_file, 'a') as f:
+    with open(result_file, 'w') as f:
         f.write("******Time: %s ******\n"%str(datetime.datetime.now()))
         f.write("******Args: %s ******\n" % str(args))
         for res in result:
-            f.write("[VULFUNC]:%20s\tVULELF:%20s\n" % (result[res]['info'][0], result[res]['info'][2]))
-            for func_info, sim in result[res]['rank']:
-                f.write("\t|Sim:%5.3f\t|Func:%20s\t|ELFPath:%100s\n\n" %(sim, func_info[0], func_info[1]))
+            if len(result[res])<1:
+                continue
+            vul_func, vul_elf = res.split("+")
+            f.write("[VULFUNC]:%20s\tVULELF:%20s\n" % (vul_func, vul_elf))
+            
+            for sim, func_name, bin_path in result[res]:
+                f.write("\t|Sim:%5.3f\t|Func:%20s\t|ELFPath:%100s\n\n" %(sim, func_name, bin_path))
 
 def binary_treelstm_search(): #search bugs with binary treelstm
     args = parse_args()
@@ -216,13 +211,14 @@ def word_cloud():#search with normal treelstm based on function MD5_Update
     if threshold < 0 or threshold > 1:
         print("Threshold Value Error! range is 0~1!")
         exit(1)
+        
     threshold = 0.8
     result = aa.db_similarity(args.source_db, args.target_db, args.use_ast,
                               threshold=threshold, start=200000, end=220000)
+    
     args.source_db = "wordcloud_"
     log_result(args, result)
 
 
 if __name__ == '__main__':
     treelstm_search()
-

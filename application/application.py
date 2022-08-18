@@ -58,7 +58,6 @@ class Application():
             self.model = model
         else:
             if model_name == "treelstm":
-                self.args.input_dim = 8
                 from model import SimilarityTreeLSTM
                 self.model = SimilarityTreeLSTM(
                     self.args.vocab_size,
@@ -92,7 +91,10 @@ class Application():
         if "auc" in checkpoint:
             logger.info("checkpoint loaded: auc %f , mse: %f \n args %s" % (
             checkpoint['auc'], checkpoint['mse'], checkpoint['args']))
-        model.load_state_dict(checkpoint['model'])
+        
+        model_dic = checkpoint['model']
+        
+        model.load_state_dict(model_dic)
         model.eval()
         # self.model.to(self.device)
         self.embmodel = model.embmodel
