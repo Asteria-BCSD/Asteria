@@ -75,10 +75,10 @@ class Trainer(object):
             #indices = torch.arange(1, dataset.num_classes + 1, dtype=torch.float, device='cpu')
             for idx in tqdm(range(len(dataset)), desc='Testing epoch  ' + str(self.epoch) + ''):
                 source_function, target_function, label = dataset[idx]
-                #ltree = source_function[-1]
-                #rtree = target_function[-1]
-                ltree = source_function
-                rtree = target_function
+                ltree = source_function[-1]
+                rtree = target_function[-1]
+                # ltree = source_function
+                # rtree = target_function
 
                 target = map_label_to_target(label, self.args.num_classes)
                 target = target.to(self.device)

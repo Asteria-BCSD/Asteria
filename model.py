@@ -74,7 +74,7 @@ class Similarity(nn.Module):
         self.num_classes = num_classes
         self.wh = nn.Linear(2 * self.mem_dim, self.hidden_dim).to(self.device)
         self.wp = nn.Linear(self.hidden_dim, self.num_classes).to(self.device)
-        self._out = nn.Linear(self.mem_dim, self.hidden_dim).to(self.device)
+        # self._out = nn.Linear(self.mem_dim, self.hidden_dim).to(self.device)
         # self._outt = nn.Linear(self.hidden_dim, 64).cuda()
 
     def forward(self, lvec, rvec): #

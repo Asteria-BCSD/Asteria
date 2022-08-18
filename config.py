@@ -14,7 +14,7 @@ def parse_args(iargs = []):
     parser.add_argument('--expname', type=str, default='crossarch',
                         help='Name to identify experiment')
     # model arguments
-    parser.add_argument('--input_dim', default=8, type=int,
+    parser.add_argument('--input_dim', default=16, type=int,
                         help='Size of input word vector')
     parser.add_argument('--mem_dim', default=150, type=int,
                         help='Size of TreeLSTM cell state')

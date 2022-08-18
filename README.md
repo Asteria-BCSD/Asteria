@@ -2,12 +2,15 @@
 
 This is the official repository for Asteria.
 
+## Enviroment Build
+`pip install -r requirements.txt`
 
 ## Files description
 
 * train.py: python file for model training
 * Tree.py: The Tree class defination
 * datahelper.py: function set for accessing sqlite database
+
 ## dirs description
 * application: prototype for Asteria
 * data: sqlite database files of ASTs
