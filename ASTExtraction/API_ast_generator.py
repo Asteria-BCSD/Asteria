@@ -25,11 +25,11 @@ def parse_arg():
     return argparser.parse_args()
 class AstGenerator():
     '''
-    This class implements these functions:  
-    1. Extract all functions ast from the specified binary file and save to the database  
-    2. Extract A specific function ast from the specified binary file and save to the database  
+    This class implements these functions: 
+    1. Extract all functions ast from the specified binary file and save to the database 
+    2. Extract A specific function ast from the specified binary file and save to the database 
     3. Batch version of function1: accessing all ELF files from the specified folder, extract all function asts and save to Database
-     4. Read A specific ELF file from the specified folder, extract all the functions ast, save to the database
+    4. Read A specific ELF file from the specified folder, extract all the functions ast, save to the database
     '''
     def __init__(self, args):
         self.Script = os.path.join(root,'ast_generator.py')  #the path to the IDAPython script for extracting AST
@@ -50,7 +50,7 @@ class AstGenerator():
         Header = ""
         if platform == 'linux':
             Header = "TVHEADLESS=1"
-        cmd_list = [Header, self.args.ida_path, "-c" ,"-A", '-S"%s %s"' % (self.Script, IDA_ARGS), binary_path]
+        cmd_list = [Header, self.args.ida_path, "-c" ,"-A", "-Lida.log" , '-S"%s %s"' % (self.Script, IDA_ARGS), binary_path]
         cmd = " ".join(cmd_list)
         p = subprocess.Popen(cmd, shell =True)
         try:
