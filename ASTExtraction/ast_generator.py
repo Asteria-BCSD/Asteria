@@ -61,7 +61,7 @@ def load_plugin_decompiler():
         idaapi.load_plugin("hexx64")
     if not idaapi.init_hexrays_plugin():
         l.error('[+] decompiler plugins load failed. IDAdb: %s' % GetInputFilePath())
-        idc.Exit(0)
+        Exit(0)
 
 wait_for_analysis_to_finish()
 load_plugin_decompiler()
@@ -407,7 +407,7 @@ class AstGenerator():
                 ast_tree, pseudocode, callee_num, caller_num = fn(func)
                 # l.error("AST_TREE:"+type(ast_tree))
                 self.function_info_list.append((func_name, hex(func.start_ea), pickle.dumps(ast_tree), pseudocode, callee_num, caller_num))
-            except Exception,e:
+            except (Exception,e):
                 l.warning("%s error" % fn)
                 l.warning(str(e))
 
