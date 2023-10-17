@@ -90,7 +90,7 @@ class DataHelper:
         cur = db.cursor()
         lines = cur.execute(sql)
         for line in lines:
-            yield line[:-1], pickle.loads(line[-1].encode("utf-8"), encoding="latin1")
+            yield line[:-1], pickle.loads(line[-1], encoding="latin1")
         cur.close()
         db.close()
 

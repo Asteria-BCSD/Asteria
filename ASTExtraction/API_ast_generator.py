@@ -103,3 +103,4 @@ if __name__ == '__main__':
         ag.extract_ast_from_dir(args.directory)
     elif args.binary and args.function:
         ag.extract_function_ast(args.binary, func_name=args.function)
+    else: ag.extract_all_function_ast(args.binary)
